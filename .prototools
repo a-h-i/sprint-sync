@@ -1,0 +1,12 @@
+node = "^22.17.0"
+pnpm = "^10.8.0"
+moon = "1.31.0"
+python = "3.12"
+
+[plugins]
+moon = "https://raw.githubusercontent.com/moonrepo/moon/master/proto-plugin.toml"
+
+
+[settings]
+auto-install = true
+

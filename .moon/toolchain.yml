@@ -1,0 +1,10 @@
+$schema: 'https://moonrepo.dev/schemas/toolchain.json'
+
+node:
+  packageManager: pnpm
+
+typescript:
+  syncProjectReferences: true
+
+python:
+  version: '3.12.9'
