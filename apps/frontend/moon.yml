@@ -1,0 +1,50 @@
+language: 'typescript'
+type: application
+
+fileGroups:
+  configs:
+    - 'package.json'
+    - 'tsconfig.json'
+    - 'postcss.config.mjs'
+    - 'eslint.config.mjs'
+    - 'next.config.ts'
+  sources:
+    - 'app/**/*'
+    - 'i18n/**/*'
+    - 'lib/**/*'
+
+tasks:
+  dev:
+    command: docker compose run --service-ports dev
+    local: true
+    deps:
+      - 'control:build'
+  build:
+    command: pnpm run build
+    inputs:
+      - '@files(configs)'
+      - '@files(sources)'
+    outputs:
+      - '.next'
+  prod:
+    command: pnpm run start
+    deps:
+      - 'build'
+    local: true
+  lint:
+    command: pnpm run lint
+    inputs:
+      - '@files(configs)'
+      - '@files(sources)'
+  format:
+    command: pnpm run format
+    inputs:
+      - '@files(configs)'
+      - '@files(sources)'
+    options:
+      runInCI: false
+  checkFormat:
+    command: pnpm run format:check
+    inputs:
+      - '@files(configs)'
+      - '@files(sources)'

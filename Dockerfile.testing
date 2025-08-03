@@ -1,0 +1,23 @@
+FROM node:latest
+
+ENV PROTO_HOME="/.proto"
+ENV PATH="$PROTO_HOME/shims:$PROTO_HOME/bin:$PATH"
+ENV SHELL=/bin/bash
+
+USER root
+
+
+RUN mkdir -p /app/.moon
+WORKDIR /app
+ADD .prototools .
+ADD .moon .moon
+
+
+RUN npm install -g @moonrepo/cli
+
+
+RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash
+
+
+
+RUN moon setup

@@ -1,0 +1,53 @@
+language: 'typescript'
+platform: 'node'
+type: 'library'
+
+fileGroups:
+  configs:
+    - 'tsconfig.json'
+    - 'package.json'
+    - 'eslint.config.ts'
+    - '.prettierrc'
+  sources:
+    - 'src/**/*'
+  tests:
+    - 'tests/**/*'
+tasks:
+  build:
+    command: 'pnpm run build'
+    inputs:
+      - '@files(sources)'
+      - '@files(configs)'
+    outputs:
+      - 'lib'
+    deps:
+      - 'storage:build'
+  test:
+    command: 'docker compose run --remove-orphans tests'
+    inputs:
+      - '@files(sources)'
+      - '@files(configs)'
+      - '@files(tests)'
+    deps:
+      - 'build'
+  format:
+    inputs:
+      - '@files(configs)'
+      - '@files(sources)'
+    options:
+      runInCI: false
+    script: pnpm run format
+    deps:
+      - 'build'
+  checkFormat:
+    command: pnpm run format:check
+    inputs:
+      - '@files(configs)'
+      - '@files(sources)'
+  lint:
+    inputs:
+      - '@files(configs)'
+      - '@files(sources)'
+    script: pnpm run lint
+    deps:
+      - 'build'

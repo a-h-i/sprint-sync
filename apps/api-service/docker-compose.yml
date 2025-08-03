@@ -1,0 +1,58 @@
+services:
+  spsync-api-image:
+    build:
+      context: ../..
+      dockerfile: Dockerfile.testing
+    image: spsync-api-image
+  pg-db:
+    command: postgres -c work_mem=8000
+    restart: always
+    environment:
+      - POSTGRES_USER=db_user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=sprint_sync_db
+    healthcheck:
+      interval: 10s
+      retries: 5
+      test:
+        - CMD-SHELL
+        - pg_isready
+      timeout: 5s
+    image: postgres:17
+    shm_size: 1gb
+  tests:
+    environment:
+      - PG_MASTER_HOST=pg-db
+      - PG_MASTER_PORT=5432
+      - PG_PASSWORD=password
+      - PG_USER=db_user
+      - PG_DB=sprint_sync_db
+    image: spsync-api-image
+    depends_on:
+      pg-db:
+        condition: service_started
+      spsync-api-image:
+        condition: service_completed_successfully
+    volumes:
+      - ../../:/app
+    working_dir: /app/apps/api-service
+    command: pnpm run test:e2e
+  dev:
+    environment:
+      - PG_MASTER_HOST=pg-db
+      - PG_MASTER_PORT=5432
+      - PG_PASSWORD=password
+      - PG_USER=db_user
+      - PG_DB=sprint_sync_db
+    image: spsync-api-image
+    ports:
+      - "3001:3000"
+    depends_on:
+      pg-db:
+        condition: service_started
+      spsync-api-image:
+        condition: service_completed_successfully
+    volumes:
+      - ../../:/app
+    working_dir: /app/apps/api-service
+    command: pnpm run start:dev

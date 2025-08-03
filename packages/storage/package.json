@@ -1,0 +1,36 @@
+{
+  "name": "@sprint-sync/storage",
+  "version": "1.0.0",
+  "description": "",
+  "types": "./lib/src/index.d.ts",
+  "main": "./lib/src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "lint": "eslint src eslint.config.mjs --cache",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.8.0",
+  "devDependencies": {
+    "@eslint/eslintrc": "catalog:",
+    "@types/factory-girl": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:",
+    "prettier": "catalog:",
+    "ts-node": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@faker-js/faker": "catalog:",
+    "argon2": "catalog:",
+    "factory-girl": "catalog:",
+    "pg": "catalog:",
+    "reflect-metadata": "catalog:",
+    "typeorm": "catalog:"
+  }
+}
