@@ -4,6 +4,7 @@ import {ConfigModule} from "@nestjs/config";
 import {getPgConfig} from "@sprint-sync/storage";
 import {AuthModule} from "./auth/auth.module";
 import {ProfileModule} from "./profile/profile.module";
+import {TaskModule} from "./task/task.module";
 
 @Module({
     imports: [
@@ -18,7 +19,8 @@ import {ProfileModule} from "./profile/profile.module";
             },
         }),
         AuthModule,
-        ProfileModule
+        ProfileModule,
+        TaskModule
     ],
 })
 export class AppModule {

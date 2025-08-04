@@ -5,6 +5,7 @@ import {
     HttpException, Logger,
 } from '@nestjs/common';
 import {logRequest} from "../logging/logReuest";
+import {EntityNotFoundError} from "typeorm";
 
 
 @Catch()
@@ -15,8 +16,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
         const req = ctx.getRequest();
         const res = ctx.getResponse();
 
-        const status =
-            exception instanceof HttpException ? exception.getStatus() : 500;
+        let status = 500;
+        let message: Object = 'Internal server error';
+
+        if (exception instanceof HttpException) {
+            status = exception.getStatus();
+            message = exception.getResponse();
+        } else if (exception instanceof EntityNotFoundError) {
+            status = 404;
+            message = 'Not found';
+        }
 
         logRequest(this.logger, {
             method: req.method,
@@ -29,10 +38,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
         res.status(status).json({
             statusCode: status,
-            message:
-                exception instanceof HttpException
-                    ? exception.getResponse()
-                    : 'Internal server error',
+            message
         });
     }
 }

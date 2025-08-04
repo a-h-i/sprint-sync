@@ -10,18 +10,20 @@ export default function TeamPage() {
     const [users, setUsers] = useState<UserSchemaType[]>([]);
     const [nextPageToken, setNextPageToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
+    const [hasMore, setHasMore] = useState(true);
     const observerRef = useRef<HTMLDivElement | null>(null);
 
     const fetchMore = useCallback(
         debounce(async () => {
-            if (loading) return;
+            if (loading || !hasMore) return;
             setLoading(true);
             const data = await listUsers(10, nextPageToken);
             setUsers(prev => prev.concat(data.users));
             setNextPageToken(data.nextPageToken ?? null);
+            setHasMore(data.nextPageToken != null);
             setLoading(false);
         }, 300),
-        [nextPageToken, loading]
+        [nextPageToken, loading, hasMore]
     );
     useEffect(() => {
         fetchMore(); // Initial load

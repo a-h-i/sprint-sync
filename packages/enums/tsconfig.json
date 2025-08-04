@@ -1,9 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2024",
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "allowJs": true,
     "outDir": "lib",
     "strict": true,
@@ -18,15 +16,6 @@
     "rootDir": ".",
     "composite": true
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "references": [
-    {
-      "path": "../enums"
-    }
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }

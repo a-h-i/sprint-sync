@@ -1,6 +1,14 @@
 import FactoryGirl from 'factory-girl';
-import { faker } from '@faker-js/faker';
-import { Profile, User } from '../models';
+import {faker} from '@faker-js/faker';
+import {Profile, Task, TaskPriority, TaskStatus, User} from '../models';
+
+
+
+function randomTaskPriority(): TaskPriority {
+    const values = [TaskPriority.LOW, TaskPriority.MEDIUM, TaskPriority.HIGH];
+    const index = Math.floor(Math.random() * values.length);
+    return values[index];
+}
 
 FactoryGirl.define<User>(
   'User',
@@ -20,5 +28,15 @@ FactoryGirl.define<Profile>('Profile', Profile, {
   last_name: () => faker.person.lastName(),
   user_id: FactoryGirl.assoc('User', 'id'),
 });
+
+FactoryGirl.define<Task>('Task', Task, {
+    description: () => faker.lorem.paragraph(),
+    title: () => faker.lorem.sentence(),
+    total_minutes: 0,
+    status: TaskStatus.TODO,
+    priority: () => randomTaskPriority(),
+});
+
+
 
 export { FactoryGirl };

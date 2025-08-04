@@ -1,4 +1,5 @@
+import TaskBoard from "@/app/(with_sidebar)/dashboard/TaskBoard";
 
 export default function() {
-    return <div>Dashboard</div>
+    return <TaskBoard />
 }

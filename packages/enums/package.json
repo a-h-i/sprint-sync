@@ -1,13 +1,13 @@
 {
-  "name": "@sprint-sync/control",
+  "name": "@sprint-sync/enums",
   "version": "1.0.0",
   "description": "",
   "types": "./lib/src/index.d.ts",
   "main": "./lib/src/index.js",
   "scripts": {
     "build": "tsc",
+    "typeorm": "typeorm-ts-node-commonjs",
     "lint": "eslint src eslint.config.mjs --cache",
-    "test": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -17,20 +17,11 @@
   "packageManager": "pnpm@10.8.0",
   "devDependencies": {
     "@eslint/eslintrc": "catalog:",
-    "@faker-js/faker": "catalog:",
     "@types/node": "catalog:",
-    "dotenv": "catalog:",
     "eslint": "catalog:",
     "eslint-config-next": "catalog:",
     "prettier": "catalog:",
     "ts-node": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:"
-  },
-  "dependencies": {
-    "@sprint-sync/storage": "workspace:^",
-    "reflect-metadata": "catalog:",
-    "typeorm": "catalog:",
-    "zod": "catalog:"
+    "typescript": "catalog:"
   }
 }
