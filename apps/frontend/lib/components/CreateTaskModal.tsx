@@ -7,11 +7,13 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {TaskPriority, TaskStatus} from "@sprint-sync/enums";
 import {useTransition} from "react";
 import toast from "react-hot-toast";
-import {Button, Input, Textarea} from "@headlessui/react";
+import {Button} from "@headlessui/react";
 import {createTask} from "@/lib/api/createTask.action";
 import {TaskSchemaType} from "@/lib/schemas/task.schema";
 import ModalDialog, {DialogContent, DialogHeader, DialogTitle} from "@/lib/components/ModalDialog";
 import Label from "@/lib/components/Label";
+import Input from "@/lib/components/Input";
+import TextArea from "@/lib/components/TextArea";
 
 interface CreateTaskModalProps {
     onClose: () => void;
@@ -65,13 +67,13 @@ export default function CreateTaskModal({onClose, onCreated}: CreateTaskModalPro
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
                         <Label>Title</Label>
-                        <Input {...register('title')} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                        <Input {...register('title')}  />
                         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
                     </div>
 
                     <div>
                         <Label>Description</Label>
-                        <Textarea {...register('description')} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                        <TextArea {...register('description')} />
                     </div>
 
                     <div className="flex gap-4">

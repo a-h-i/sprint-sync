@@ -7,9 +7,11 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {useTransition} from "react";
 import {updateTask} from "@/lib/api/updateTask.action";
 import toast from "react-hot-toast";
-import {Button, Input, Textarea} from "@headlessui/react";
+import {Button} from "@headlessui/react";
 import ModalDialog, {DialogContent, DialogHeader, DialogTitle} from "@/lib/components/ModalDialog";
 import Label from "@/lib/components/Label";
+import Input from "@/lib/components/Input";
+import TextArea from "@/lib/components/TextArea";
 
 
 interface EditTaskModalProps {
@@ -67,7 +69,7 @@ export default function EditTaskModal({task, onClose, onUpdated}: EditTaskModalP
 
                     <div>
                         <Label>Description</Label>
-                        <Textarea {...register('description')} />
+                        <TextArea {...register('description')} />
                     </div>
 
                     <div className="flex gap-4">

@@ -9,6 +9,7 @@ import {loginUser} from "@/app/login/login.action";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import Label from "@/lib/components/Label";
+import Input from "@/lib/components/Input";
 
 export default function() {
     const [isPending, startTransition] = useTransition();
@@ -58,10 +59,10 @@ export default function() {
                     <Label htmlFor="username">
                         Email
                     </Label>
-                    <input
+                    <Input
                         type="text"
                         {...register('username')}
-                        className="w-full border px-3 py-2 mt-1 rounded text-sm"
+
                     />
                     {errors.username && (
                         <p className="text-xs text-red-600 mt-1">{errors.username.message}</p>
@@ -72,10 +73,10 @@ export default function() {
                     <Label htmlFor="password">
                         Password
                     </Label>
-                    <input
+                    <Input
                         type="password"
                         {...register('password')}
-                        className="w-full border px-3 py-2 mt-1 rounded text-sm"
+
                     />
                     {errors.password && (
                         <p className="text-xs text-red-600 mt-1">{errors.password.message}</p>

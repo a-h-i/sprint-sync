@@ -10,6 +10,7 @@ import {updateProfile} from "@/lib/api/update-profile.action";
 import toast from 'react-hot-toast';
 import {changePassword} from "@/lib/api/change-password.action";
 import Label from "@/lib/components/Label";
+import Input from "@/lib/components/Input";
 
 interface ProfileFormProps {
     initialFirstName: string;
@@ -84,9 +85,9 @@ export default function ProfileForm(props: ProfileFormProps) {
 
                 <div>
                     <Label>First Name</Label>
-                    <input
+                    <Input
                         {...profileForm.register('first_name')}
-                        className="w-full border rounded px-3 py-2 mt-1 text-sm"
+
                     />
                     {profileForm.formState.errors.first_name && (
                         <p className="text-xs text-red-600 mt-1">{profileForm.formState.errors.first_name.message}</p>
@@ -94,9 +95,9 @@ export default function ProfileForm(props: ProfileFormProps) {
                 </div>
                 <div>
                     <Label>Last Name</Label>
-                    <input
+                    <Input
                         {...profileForm.register('last_name')}
-                        className="w-full border rounded px-3 py-2 mt-1 text-sm"
+
                     />
                     {profileForm.formState.errors.last_name && (
                         <p className="text-xs text-red-600 mt-1">{profileForm.formState.errors.last_name.message}</p>
@@ -118,10 +119,10 @@ export default function ProfileForm(props: ProfileFormProps) {
 
                 <div>
                     <Label>Current Password</Label>
-                    <input
+                    <Input
                         type="password"
                         {...passwordForm.register('current_password')}
-                        className="w-full border rounded px-3 py-2 mt-1 text-sm"
+
                     />
                     {passwordForm.formState.errors.current_password && (
                         <p className="text-xs text-red-600 mt-1">{passwordForm.formState.errors.current_password.message}</p>
@@ -130,10 +131,10 @@ export default function ProfileForm(props: ProfileFormProps) {
 
                 <div>
                     <Label>New Password</Label>
-                    <input
+                    <Input
                         type="password"
                         {...passwordForm.register('new_password')}
-                        className="w-full border rounded px-3 py-2 mt-1 text-sm"
+
                     />
                     {passwordForm.formState.errors.new_password && (
                         <p className="text-xs text-red-600 mt-1">{passwordForm.formState.errors.new_password.message}</p>
@@ -142,10 +143,10 @@ export default function ProfileForm(props: ProfileFormProps) {
 
                 <div>
                     <Label>Confirm New Password</Label>
-                    <input
+                    <Input
                         type="password"
                         {...passwordForm.register('confirm_password')}
-                        className="w-full border rounded px-3 py-2 mt-1 text-sm"
+
                     />
                     {passwordForm.formState.errors.confirm_password && (
                         <p className="text-xs text-red-600 mt-1">{passwordForm.formState.errors.confirm_password.message}</p>
