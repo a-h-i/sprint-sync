@@ -14,7 +14,7 @@ const NextTokenSchema = z.object({
 })
 
 export async function listTasks(manager: EntityManager, options: {
-    pageSize: number,
+    pageSize?: number,
     status: TaskStatus,
     assignedToUserId?: number,
     nextPageToken?: string,
@@ -26,10 +26,12 @@ export async function listTasks(manager: EntityManager, options: {
             status: options.status,
         })
         .orderBy('task.priority', 'DESC')
-        .addOrderBy('task.id', 'DESC')
-        .limit(options.pageSize + 1);
+        .addOrderBy('task.id', 'DESC');
+        if (options.pageSize != null) {
+            query = query.limit(options.pageSize + 1);
+        }
 
-    if (options.nextPageToken != null) {
+    if (options.pageSize && options.nextPageToken != null) {
         const jsonString = Buffer.from(options.nextPageToken, 'base64url').toString('utf-8');
         const parsedJson = JSON.parse(jsonString);
         const parsedToken = NextTokenSchema.parse(parsedJson);
@@ -47,8 +49,8 @@ export async function listTasks(manager: EntityManager, options: {
         })
     }
     const tasks = await query.getMany();
-    const page = tasks.slice(0, options.pageSize);
-    if (tasks.length > options.pageSize) {
+    const page = options.pageSize != null ? tasks.slice(0, options.pageSize) : tasks;
+    if (options.pageSize != null && tasks.length > options.pageSize) {
         const nextTokenString = JSON.stringify({
             id: page[page.length - 1].id,
             priority: page[page.length - 1].priority,
