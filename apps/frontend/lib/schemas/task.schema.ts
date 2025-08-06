@@ -11,8 +11,8 @@ export const TaskSchema = z.object({
     status: z.enum(TaskStatus),
     assigned_to: z.object(UserSchema).optional().nullable(),
     total_minutes: z.number(),
-    created_at: z.date(),
-    updated_at: z.date(),
+    created_at: z.string(),
+    updated_at: z.string(),
 });
 
 export type TaskSchemaType = z.infer<typeof TaskSchema>;

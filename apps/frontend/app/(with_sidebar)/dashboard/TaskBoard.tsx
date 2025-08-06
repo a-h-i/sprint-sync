@@ -39,10 +39,10 @@ export default function TaskBoard() {
             <Button className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onClick={() => setShowCreateModal(true)}>Create Task</Button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {statuses.map(status => (
+            {Object.entries(columns).map(([status, initialTasks]) => (
                 <TaskColumn
-                    key={status} status={status}
-                    initialTasks={columns[status]}
+                    key={status} status={status as TaskStatus}
+                    initialTasks={initialTasks}
                     onUpdated={handleUpdate}
                 />
             ))}

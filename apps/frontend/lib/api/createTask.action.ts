@@ -24,7 +24,7 @@ export async function createTask(data: FormData) {
         const body = await response.json();
         console.error({
             status: response.status,
-            body,
+            body: JSON.stringify(body),
         });
         throw new Error('Unknown server error');
     }

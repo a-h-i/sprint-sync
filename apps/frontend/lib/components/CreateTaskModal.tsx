@@ -11,6 +11,7 @@ import {Button, Input, Textarea} from "@headlessui/react";
 import {createTask} from "@/lib/api/createTask.action";
 import {TaskSchemaType} from "@/lib/schemas/task.schema";
 import ModalDialog, {DialogContent, DialogHeader, DialogTitle} from "@/lib/components/ModalDialog";
+import Label from "@/lib/components/Label";
 
 interface CreateTaskModalProps {
     onClose: () => void;
@@ -63,19 +64,19 @@ export default function CreateTaskModal({onClose, onCreated}: CreateTaskModalPro
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium">Title</label>
-                        <Input {...register('title')} />
+                        <Label>Title</Label>
+                        <Input {...register('title')} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                         {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">Description</label>
-                        <Textarea {...register('description')} />
+                        <Label>Description</Label>
+                        <Textarea {...register('description')} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
                     </div>
 
                     <div className="flex gap-4">
                         <div className="flex-1">
-                            <label className="block text-sm font-medium">Priority</label>
+                            <Label>Priority</Label>
                             <select {...register('priority')} className="w-full border rounded p-2">
                                 <option value="low">Low</option>
                                 <option value="medium">Medium</option>
@@ -84,7 +85,7 @@ export default function CreateTaskModal({onClose, onCreated}: CreateTaskModalPro
                         </div>
 
                         <div className="flex-1">
-                            <label className="block text-sm font-medium">Status</label>
+                            <Label>Status</Label>
                             <select {...register('status')} className="w-full border rounded p-2">
                                 <option value="todo">To Do</option>
                                 <option value="in_progress">In Progress</option>
@@ -94,7 +95,7 @@ export default function CreateTaskModal({onClose, onCreated}: CreateTaskModalPro
                     </div>
 
 
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="submit" className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" disabled={isPending}>
                         {isPending ? 'Creating...' : 'Create'}
                     </Button>
                 </form>

@@ -44,7 +44,7 @@ export default function TaskColumn(props: TaskColumnProps) {
     );
     useEffect(() => {
         fetchMore(); // initial load
-    }, []);
+    });
     useEffect(() => {
         if (!sentinelRef.current || !hasMore) return;
         const observer = new IntersectionObserver(entries => {

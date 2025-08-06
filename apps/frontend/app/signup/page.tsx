@@ -10,6 +10,7 @@ import {signupUser} from "@/app/signup/signup.action";
 import {loginUser} from "@/app/login/login.action";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
+import Label from "@/lib/components/Label";
 
 export default function() {
     const [serverError, setServerError] = useState<string | null>(null);
@@ -63,9 +64,9 @@ export default function() {
                 )}
 
                 <div>
-                    <label htmlFor="username" className="block text-sm font-medium">
+                    <Label htmlFor="username">
                         Username
-                    </label>
+                    </Label>
                     <input
                         type="text"
                         {...register('username')}
@@ -77,9 +78,9 @@ export default function() {
                 </div>
 
                 <div>
-                    <label htmlFor="password" className="block text-sm font-medium">
+                    <Label htmlFor="password">
                         Password
-                    </label>
+                    </Label>
                     <input
                         type="password"
                         {...register('password')}
@@ -91,9 +92,9 @@ export default function() {
                 </div>
 
                 <div>
-                    <label htmlFor="first_name" className="block text-sm font-medium">
+                    <Label htmlFor="first_name">
                         First Name
-                    </label>
+                    </Label>
                     <input
                         type="text"
                         {...register('first_name')}
@@ -105,9 +106,9 @@ export default function() {
                 </div>
 
                 <div>
-                    <label htmlFor="last_name" className="block text-sm font-medium">
+                    <Label htmlFor="last_name">
                         Last Name
-                    </label>
+                    </Label>
                     <input
                         type="text"
                         {...register('last_name')}

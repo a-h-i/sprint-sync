@@ -1,5 +1,5 @@
 import {Expose, Type} from "class-transformer";
-import {TaskStatus} from "@sprint-sync/storage";
+import {TaskPriority, TaskStatus} from "@sprint-sync/storage";
 import {UserDto} from "./user.dto";
 
 
@@ -12,6 +12,9 @@ export class TaskDto {
 
     @Expose()
     description?: string | null;
+
+    @Expose()
+    priority!: TaskPriority;
 
     @Expose()
     status!: TaskStatus;

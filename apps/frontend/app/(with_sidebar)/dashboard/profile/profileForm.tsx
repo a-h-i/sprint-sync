@@ -9,6 +9,7 @@ import {ChangePasswordSchema, ChangePasswordSchemaType} from "@/lib/schemas/chan
 import {updateProfile} from "@/lib/api/update-profile.action";
 import toast from 'react-hot-toast';
 import {changePassword} from "@/lib/api/change-password.action";
+import Label from "@/lib/components/Label";
 
 interface ProfileFormProps {
     initialFirstName: string;
@@ -82,7 +83,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 <h2 className="text-lg font-semibold">Basic Info</h2>
 
                 <div>
-                    <label className="block text-sm font-medium">First Name</label>
+                    <Label>First Name</Label>
                     <input
                         {...profileForm.register('first_name')}
                         className="w-full border rounded px-3 py-2 mt-1 text-sm"
@@ -92,7 +93,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                     )}
                 </div>
                 <div>
-                    <label className="block text-sm font-medium">Last Name</label>
+                    <Label>Last Name</Label>
                     <input
                         {...profileForm.register('last_name')}
                         className="w-full border rounded px-3 py-2 mt-1 text-sm"
@@ -116,7 +117,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 <h2 className="text-lg font-semibold">Change Password</h2>
 
                 <div>
-                    <label className="block text-sm font-medium">Current Password</label>
+                    <Label>Current Password</Label>
                     <input
                         type="password"
                         {...passwordForm.register('current_password')}
@@ -128,7 +129,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium">New Password</label>
+                    <Label>New Password</Label>
                     <input
                         type="password"
                         {...passwordForm.register('new_password')}
@@ -140,7 +141,7 @@ export default function ProfileForm(props: ProfileFormProps) {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium">Confirm New Password</label>
+                    <Label>Confirm New Password</Label>
                     <input
                         type="password"
                         {...passwordForm.register('confirm_password')}

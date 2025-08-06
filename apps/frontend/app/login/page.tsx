@@ -8,6 +8,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import {loginUser} from "@/app/login/login.action";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
+import Label from "@/lib/components/Label";
 
 export default function() {
     const [isPending, startTransition] = useTransition();
@@ -54,9 +55,9 @@ export default function() {
                 )}
 
                 <div>
-                    <label htmlFor="username" className="block text-sm font-medium">
+                    <Label htmlFor="username">
                         Email
-                    </label>
+                    </Label>
                     <input
                         type="text"
                         {...register('username')}
@@ -68,9 +69,9 @@ export default function() {
                 </div>
 
                 <div>
-                    <label htmlFor="password" className="block text-sm font-medium">
+                    <Label htmlFor="password">
                         Password
-                    </label>
+                    </Label>
                     <input
                         type="password"
                         {...register('password')}

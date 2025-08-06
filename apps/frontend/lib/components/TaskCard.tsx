@@ -20,13 +20,13 @@ export default function TaskCard(props: TaskCardProps) {
         onClick={() => setEditingTask(true)}
         className="bg-white cursor-pointer rounded-md border p-3 shadow-sm hover:shadow-md transition"
         >
-            <div className="text-sm font-semibold">#{props.task.id}</div>
+            <div className="text-sm font-semibold">#{props.task.id}{' '}{props.task.title}</div>
             <div className='mt-2 flex gap-2'>
                 <PriorityBadge priority={props.task.priority}>
                     {capitalize(props.task.priority)}
                 </PriorityBadge>
                 <StatusBadge status={props.task.status}>
-                    {capitalize(props.task.status.replace('_', ''))}
+                    {capitalize(props.task.status.replace('_', ' '))}
                 </StatusBadge>
 
             </div>
