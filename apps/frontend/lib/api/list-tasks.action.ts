@@ -6,14 +6,16 @@ import {TaskListResponseSchema} from "@/lib/schemas/taskListResponseSchema";
 
 interface ListTasksParams {
     status: TaskStatus,
-    pageSize: number,
+    pageSize?: number,
     nextPageToken: string | null,
 }
 
 
 export async function listTasks(options: ListTasksParams)  {
     const params = new URLSearchParams();
-    params.append('pageSize', options.pageSize.toString());
+    if (options.pageSize != null) {
+        params.append('pageSize', options.pageSize.toString());
+    }
     params.append('status', options.status);
     if (options.nextPageToken) {
         params.append('nextPageToken', options.nextPageToken);

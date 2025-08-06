@@ -8,8 +8,9 @@ export class ListTasksQueryParamsDto {
     nextPageToken?: string | null;
 
     @IsNumber()
+    @IsOptional()
     @Max(100)
-    pageSize!: number;
+    pageSize?: number;
 
     @IsOptional()
     @IsNumber()
