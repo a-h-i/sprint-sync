@@ -1,7 +1,5 @@
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
-import {
-  LoginResponseSchemaType,
-} from '@/lib/schemas/loginResponse.schema';
+import { LoginResponseSchemaType } from '@/lib/schemas/loginResponse.schema';
 import { UserSchema, UserSchemaType } from '@/lib/schemas/user.schema';
 
 const AUTH_TOKEN_COOKIE = 'sprint-sync-auth-token';

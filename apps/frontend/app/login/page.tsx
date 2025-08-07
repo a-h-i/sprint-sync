@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Label from '@/lib/components/Label';
 import Input from '@/lib/components/Input';
-import {clsx} from "clsx";
+import { clsx } from 'clsx';
 
 export default function Page() {
   const [isPending, startTransition] = useTransition();
@@ -78,8 +78,8 @@ export default function Page() {
         <button
           type='submit'
           disabled={isPending}
-          className={clsx('w-full rounded py-2 text-white ', {
-            'bg-blue-400 cursor-not-allowed': isPending,
+          className={clsx('w-full rounded py-2 text-white', {
+            'cursor-not-allowed bg-blue-400': isPending,
             'bg-blue-600 hover:bg-blue-700': !isPending,
           })}
         >

@@ -17,8 +17,8 @@ export default function TeamPage() {
       if (loading || !hasMore) return;
       setLoading(true);
       const data = await listUsers({
-          pageSize: 10,
-          nextPageToken,
+        pageSize: 10,
+        nextPageToken,
       });
       setUsers((prev) => prev.concat(data.users));
       setNextPageToken(data.nextPageToken ?? null);
