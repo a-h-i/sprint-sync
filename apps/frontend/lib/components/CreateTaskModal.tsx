@@ -59,7 +59,7 @@ export default function CreateTaskModal({
         onCreated(task);
         onClose();
         reset();
-      } catch (e: any) {
+      } catch (e: unknown) {
         toast.error('Failed to create task');
         console.error(e);
       }

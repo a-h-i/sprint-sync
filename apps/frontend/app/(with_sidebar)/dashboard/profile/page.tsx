@@ -2,7 +2,7 @@
 
 import { apiFetch } from '@/lib/api/apiFetch';
 import { cookies } from 'next/headers';
-import { getCurrentUser, setCurrentUser } from '@/lib/auth/auth.service';
+import { getCurrentUser } from '@/lib/auth/auth.service';
 import { UserSchema } from '@/lib/schemas/user.schema';
 import ProfileForm from '@/app/(with_sidebar)/dashboard/profile/profileForm';
 

@@ -16,7 +16,10 @@ export default function TeamPage() {
     debounce(async () => {
       if (loading || !hasMore) return;
       setLoading(true);
-      const data = await listUsers(10, nextPageToken);
+      const data = await listUsers({
+          pageSize: 10,
+          nextPageToken,
+      });
       setUsers((prev) => prev.concat(data.users));
       setNextPageToken(data.nextPageToken ?? null);
       setHasMore(data.nextPageToken != null);
@@ -26,7 +29,7 @@ export default function TeamPage() {
   );
   useEffect(() => {
     fetchMore(); // Initial load
-  }, []);
+  }, [fetchMore]);
 
   useEffect(() => {
     if (!observerRef.current || !nextPageToken) return;
@@ -39,7 +42,7 @@ export default function TeamPage() {
 
     observer.observe(observerRef.current);
     return () => observer.disconnect();
-  }, [observerRef.current, nextPageToken, fetchMore]);
+  }, [observerRef, nextPageToken, fetchMore]);
 
   return (
     <div className='space-y-2 p-4'>

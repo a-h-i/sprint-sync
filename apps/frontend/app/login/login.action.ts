@@ -4,7 +4,6 @@ import { LoginSchema } from '@/app/login/login.schema';
 import { cookies } from 'next/headers';
 import {
   LoginResponseSchema,
-  LoginResponseSchemaType,
 } from '@/lib/schemas/loginResponse.schema';
 import { setToken } from '@/lib/auth/auth.service';
 

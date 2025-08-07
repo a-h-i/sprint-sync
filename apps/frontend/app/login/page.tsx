@@ -9,8 +9,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Label from '@/lib/components/Label';
 import Input from '@/lib/components/Input';
+import {clsx} from "clsx";
 
-export default function () {
+export default function Page() {
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
   const {
@@ -30,7 +31,7 @@ export default function () {
       try {
         await loginUser(formData);
         router.push('/dashboard');
-      } catch (e) {
+      } catch (e: unknown) {
         if (e instanceof Error) {
           setServerError(e.message);
         } else {
@@ -56,7 +57,7 @@ export default function () {
 
         <div>
           <Label htmlFor='username'>Email</Label>
-          <Input type='text' {...register('username')} />
+          <Input id='username' type='text' {...register('username')} />
           {errors.username && (
             <p className='mt-1 text-xs text-red-600'>
               {errors.username.message}
@@ -66,7 +67,7 @@ export default function () {
 
         <div>
           <Label htmlFor='password'>Password</Label>
-          <Input type='password' {...register('password')} />
+          <Input id='password' type='password' {...register('password')} />
           {errors.password && (
             <p className='mt-1 text-xs text-red-600'>
               {errors.password.message}
@@ -77,12 +78,15 @@ export default function () {
         <button
           type='submit'
           disabled={isPending}
-          className='w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700'
+          className={clsx('w-full rounded py-2 text-white ', {
+            'bg-blue-400 cursor-not-allowed': isPending,
+            'bg-blue-600 hover:bg-blue-700': !isPending,
+          })}
         >
           {isPending ? 'Logging in…' : 'Login'}
         </button>
         <div className='text-center text-sm text-gray-600'>
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link
             href='/signup'
             className='font-medium text-blue-600 hover:underline'

@@ -11,7 +11,7 @@ import Link from 'next/link';
 import Label from '@/lib/components/Label';
 import Input from '@/lib/components/Input';
 
-export default function () {
+export default function Page() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 

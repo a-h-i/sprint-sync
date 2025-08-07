@@ -112,7 +112,7 @@ export default function EditTaskModal({
         const updatedTask = await updateTask(task.id, data);
         onUpdated(updatedTask);
         onClose();
-      } catch (e: any) {
+      } catch (_) {
         toast.error('Failed to update task');
       }
     });

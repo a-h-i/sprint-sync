@@ -1,6 +1,5 @@
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 import {
-  LoginResponseSchema,
   LoginResponseSchemaType,
 } from '@/lib/schemas/loginResponse.schema';
 import { UserSchema, UserSchemaType } from '@/lib/schemas/user.schema';
