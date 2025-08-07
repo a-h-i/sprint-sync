@@ -42,6 +42,5 @@ export async function listUsers(
       users: page,
       nextPageToken: null,
     };
-
   }
 }

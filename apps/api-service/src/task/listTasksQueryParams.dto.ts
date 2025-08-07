@@ -1,23 +1,21 @@
-import {IsEnum, IsNumber, IsOptional, IsString, Max} from "class-validator";
-import {TaskStatus} from "@sprint-sync/storage";
-
+import { IsEnum, IsNumber, IsOptional, IsString, Max } from 'class-validator';
+import { TaskStatus } from '@sprint-sync/storage';
 
 export class ListTasksQueryParamsDto {
-    @IsOptional()
-    @IsString()
-    nextPageToken?: string | null;
+  @IsOptional()
+  @IsString()
+  nextPageToken?: string | null;
 
-    @IsNumber()
-    @IsOptional()
-    @Max(100)
-    pageSize?: number;
+  @IsNumber()
+  @IsOptional()
+  @Max(100)
+  pageSize?: number;
 
-    @IsOptional()
-    @IsNumber()
-    assigneeId?: number | null;
+  @IsOptional()
+  @IsNumber()
+  assigneeId?: number | null;
 
-    @IsEnum(TaskStatus)
-    @IsOptional()
-    status?: TaskStatus | null;
-
+  @IsEnum(TaskStatus)
+  @IsOptional()
+  status?: TaskStatus | null;
 }

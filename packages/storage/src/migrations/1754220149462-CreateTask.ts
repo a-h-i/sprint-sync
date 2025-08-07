@@ -1,10 +1,8 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateTask1754220149462 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
-
-        await queryRunner.query(`
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             create type task_priority as enum ('low', 'medium', 'high'); 
             create table task
             (
@@ -29,13 +27,11 @@ export class CreateTask1754220149462 implements MigrationInterface {
             create index idx_task_priority_id on task (priority desc, id desc);
             create index idx_task_assigned_priority_id on task (assigned_to_user_id asc, priority desc, id desc);
         `);
+  }
 
-    }
-
-    public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`
             drop table task;
         `);
-    }
-
+  }
 }

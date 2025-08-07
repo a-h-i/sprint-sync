@@ -1,12 +1,11 @@
-import {Expose, Type} from "class-transformer";
-import {TaskDto} from "../dtos/task.dto";
-
+import { Expose, Type } from 'class-transformer';
+import { TaskDto } from '../dtos/task.dto';
 
 export class ListTasksResponseDto {
-    @Expose()
-    @Type(() => TaskDto)
-    tasks!: TaskDto[];
+  @Expose()
+  @Type(() => TaskDto)
+  tasks!: TaskDto[];
 
-    @Expose()
-    nextPageToken!: string | null;
+  @Expose()
+  nextPageToken!: string | null;
 }

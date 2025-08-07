@@ -1,11 +1,14 @@
-import {Input as HeadlessInput} from "@headlessui/react";
-import React from "react";
+import { Input as HeadlessInput } from '@headlessui/react';
+import React from 'react';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-}
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 export default function Input(props: InputProps) {
-    return <HeadlessInput
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        {...props} />
+  return (
+    <HeadlessInput
+      className='block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
+      {...props}
+    />
+  );
 }
