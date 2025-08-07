@@ -7,17 +7,19 @@ import {
 } from '@nestjs/common';
 import { logRequest } from '../logging/logReuest';
 import { EntityNotFoundError } from 'typeorm';
+import { Request, Response } from 'express';
+import { User } from '@sprint-sync/storage';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger('HTTP');
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const req = ctx.getRequest();
-    const res = ctx.getResponse();
+    const req: Request = ctx.getRequest();
+    const res: Response = ctx.getResponse();
 
     let status = 500;
-    let message: Object = 'Internal server error';
+    let message: object | string = 'Internal server error';
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
@@ -30,9 +32,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
     logRequest(this.logger, {
       method: req.method,
       path: req.originalUrl,
-      userId: req.user?.id ?? 'anonymous',
+      userId: (req['user'] as User)?.id ?? 'anonymous',
       statusCode: status,
-      startTime: req._startTime ?? process.hrtime.bigint(),
+      startTime: (req['_startTime'] as bigint) ?? process.hrtime.bigint(),
       error:
         exception instanceof Error ? exception : new Error(String(exception)),
     });

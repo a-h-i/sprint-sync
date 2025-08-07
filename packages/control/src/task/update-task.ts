@@ -25,6 +25,7 @@ export async function updateTask(
       continue;
     }
     if (value !== undefined) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (task as any)[key] = value;
     }
   }

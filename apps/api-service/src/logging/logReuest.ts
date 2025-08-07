@@ -6,7 +6,7 @@ interface IMessage {
   userId: number;
   statusCode: number;
   startTime: bigint;
-  error?: any;
+  error?: unknown;
 }
 
 export function logRequest(logger: Logger, message: IMessage) {

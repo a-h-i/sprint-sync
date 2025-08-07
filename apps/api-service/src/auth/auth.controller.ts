@@ -11,7 +11,7 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() body: LoginRequest): Promise<LoginResponseDto> {
-    const data = this.loginService.signIn(body.username, body.password);
+    const data = await this.loginService.signIn(body.username, body.password);
     return plainToInstance(LoginResponseDto, data, {
       excludeExtraneousValues: true,
     });

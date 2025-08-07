@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Task, TaskStatus, User } from '@sprint-sync/storage'; // Using Task and Status enums
+import { Task, User } from '@sprint-sync/storage'; // Using Task and Status enums
 import { ListTasksQueryParamsDto } from './listTasksQueryParams.dto';
 import { createTask, listTasks, updateTask } from '@sprint-sync/control';
 import { ListTasksResponseDto } from './listTasksResponse.dto';
@@ -29,7 +29,7 @@ export class TaskService {
             assigned_to: null,
           };
         } else {
-          let user = await task.assigned_to;
+          const user = await task.assigned_to;
           return {
             ...task,
             assigned_to:
@@ -57,7 +57,7 @@ export class TaskService {
 
   async getTaskById(id: number): Promise<TaskDto> {
     const task = await this.source.manager.findOneByOrFail(Task, { id });
-    let user = await task.assigned_to;
+    const user = await task.assigned_to;
     if (user != null) {
       return plainToInstance(
         TaskDto,
@@ -133,7 +133,7 @@ export class TaskService {
       status: data.status,
       assigned_to_user_id: data.assigned_to_user_id,
     });
-    let taskUser = await task.assigned_to;
+    const taskUser = await task.assigned_to;
     if (taskUser != null) {
       return plainToInstance(
         TaskDto,
