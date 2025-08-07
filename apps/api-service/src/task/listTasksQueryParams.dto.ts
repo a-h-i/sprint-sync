@@ -17,6 +17,7 @@ export class ListTasksQueryParamsDto {
     assigneeId?: number | null;
 
     @IsEnum(TaskStatus)
-    status!: TaskStatus
+    @IsOptional()
+    status?: TaskStatus | null;
 
 }

@@ -1,7 +1,7 @@
 import {Input as HeadlessInput} from "@headlessui/react";
-import React, {HTMLAttributes} from "react";
+import React from "react";
 
-export interface InputProps extends HTMLAttributes<HTMLInputElement> {
+export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export default function Input(props: InputProps) {

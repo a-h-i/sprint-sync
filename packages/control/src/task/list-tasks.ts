@@ -15,21 +15,24 @@ const NextTokenSchema = z.object({
 
 export async function listTasks(manager: EntityManager, options: {
     pageSize?: number,
-    status: TaskStatus,
+    status?: TaskStatus,
     assignedToUserId?: number,
     nextPageToken?: string,
 }): Promise<TasksPage> {
     let query = manager.createQueryBuilder()
         .select('task')
         .from(Task, 'task')
-        .where('task.status = :status', {
-            status: options.status,
-        })
         .orderBy('task.priority', 'DESC')
         .addOrderBy('task.id', 'DESC');
-        if (options.pageSize != null) {
-            query = query.limit(options.pageSize + 1);
-        }
+    if (options.pageSize != null) {
+        query = query.limit(options.pageSize + 1);
+    }
+
+    if (options.status != null) {
+        query = query.andWhere('task.status = :status', {
+            status: options.status,
+        })
+    }
 
     if (options.pageSize && options.nextPageToken != null) {
         const jsonString = Buffer.from(options.nextPageToken, 'base64url').toString('utf-8');

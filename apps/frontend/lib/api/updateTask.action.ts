@@ -12,7 +12,7 @@ export async function updateTask(id: number, data: FormData) {
         description: data.get('description'),
         status: data.get('status'),
         priority: data.get('priority'),
-        total_minutes: data.get('total_minutes'),
+        total_minutes: parseInt(data.get('total_minutes') as string, 10),
     });
 
     const response = await apiFetch(`/task/${id}`, {

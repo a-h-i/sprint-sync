@@ -10,7 +10,7 @@ function Skeleton({className}: { className: string}) {
 
 export default function TaskCardSkeleton() {
     return (
-        <div className="rounded-md border p-3 shadow-sm bg-white space-y-2">
+        <div className="animate-pulse rounded-md border p-3 shadow-sm bg-gray-200 space-y-2">
             {/* Simulated ID */}
             <Skeleton className="h-4 w-1/4 rounded" />
 

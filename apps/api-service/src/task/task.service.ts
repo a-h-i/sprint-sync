@@ -22,7 +22,7 @@ export class TaskService {
             pageSize: params.pageSize,
             nextPageToken: params.nextPageToken ?? undefined,
             assignedToUserId: params.assigneeId ?? undefined,
-            status: params.status
+            status: params.status ?? undefined
         });
 
         const tasks = await Promise.all(page.tasks.map(async (task) => {
@@ -94,12 +94,12 @@ export class TaskService {
     }
 
     async update(id: number, data: UpdateTaskRequestDto, user: User): Promise<TaskDto> {
+        const taskToUpdate = await this.source.manager.findOneByOrFail(Task, {id});
         if (!user.is_admin) {
             if (data.assigned_to_user_id != null && data.assigned_to_user_id !== user.id) {
                 throw new ForbiddenException();
             } else if (data.assigned_to_user_id == null) {
-                const task = await this.source.manager.findOneByOrFail(Task, {id});
-                if (task.assigned_to_user_id !== user.id) {
+                if (taskToUpdate.assigned_to_user_id !== user.id) {
                     throw new ForbiddenException();
                 }
             }

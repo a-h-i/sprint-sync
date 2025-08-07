@@ -23,8 +23,11 @@ export class CreateTask1754220149462 implements MigrationInterface {
                 on task
                 for each row
                 execute procedure set_updated_at();
-            create index idx_task_priority_id on task (status desc, priority desc, id desc);
-            create index idx_task_assigned_priority_id on task (assigned_to_user_id asc, status asc, priority desc, id desc);
+            create index idx_status_task_priority_id on task (status desc, priority desc, id desc);
+            create index idx_status_task_assigned_priority_id on task (assigned_to_user_id asc, status desc, priority desc, id desc);
+            
+            create index idx_task_priority_id on task (priority desc, id desc);
+            create index idx_task_assigned_priority_id on task (assigned_to_user_id asc, priority desc, id desc);
         `);
 
     }
