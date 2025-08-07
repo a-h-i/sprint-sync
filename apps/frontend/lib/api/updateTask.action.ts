@@ -2,25 +2,18 @@
 
 
 
-import {EditTaskSchema} from "@/lib/schemas/editTask.schema";
+import {EditTaskSchemaType} from "@/lib/schemas/editTask.schema";
 import {apiFetch} from "@/lib/api/apiFetch";
 import {TaskSchema} from "@/lib/schemas/task.schema";
 
-export async function updateTask(id: number, data: FormData) {
-    const parsed = EditTaskSchema.parse({
-        title: data.get('title'),
-        description: data.get('description'),
-        status: data.get('status'),
-        priority: data.get('priority'),
-        total_minutes: parseInt(data.get('total_minutes') as string, 10),
-    });
+export async function updateTask(id: number, data: EditTaskSchemaType) {
 
     const response = await apiFetch(`/task/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(parsed),
+        body: JSON.stringify(data),
     });
     if (!response.ok) {
         const body = await response.json();

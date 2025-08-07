@@ -7,6 +7,7 @@ export const EditTaskSchema = z.object({
     priority: z.enum(TaskPriority),
     status: z.enum(TaskStatus),
     total_minutes: z.number(),
+    assigned_to_user_id: z.number().optional().nullable(),
 });
 
 export type EditTaskSchemaType = z.infer<typeof EditTaskSchema>;

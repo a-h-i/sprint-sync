@@ -9,7 +9,8 @@ interface UsersPage {
 export async function listUsers(
   manager: EntityManager,
   pageSize: number,
-  nextPageToken?: string,
+  username?: string | null,
+  nextPageToken?: string | null,
 ): Promise<UsersPage> {
   let query = manager
     .createQueryBuilder()
@@ -17,6 +18,13 @@ export async function listUsers(
     .from(User, 'user')
     .orderBy('user.id', 'ASC')
     .limit(pageSize + 1);
+
+  if (username != null) {
+    query = query.where('user.username like :username || %', {
+      username: username,
+    });
+  }
+
   if (nextPageToken != null) {
     query = query.where('user.id >= :nextPageToken', {
       nextPageToken: nextPageToken,

@@ -6,6 +6,7 @@ import {capitalize} from "lodash";
 import StatusBadge from "@/lib/components/StatusBadge";
 import {useState} from "react";
 import EditTaskModal from "@/lib/components/EditTaskModal";
+import Badge from "@/lib/components/Badge";
 
 interface TaskCardProps {
     task: TaskSchemaType;
@@ -28,6 +29,10 @@ export default function TaskCard(props: TaskCardProps) {
                 <StatusBadge status={props.task.status}>
                     {capitalize(props.task.status.replace('_', ' '))}
                 </StatusBadge>
+
+                <Badge color='gray'>
+                    {props.task.assigned_to?.profile.first_name ?? 'Unassigned'}
+                </Badge>
 
             </div>
             {editingTask && (

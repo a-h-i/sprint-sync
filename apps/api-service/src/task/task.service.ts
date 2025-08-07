@@ -29,14 +29,13 @@ export class TaskService {
             if (task.assigned_to_user_id == null) {
                 return {
                     ...task,
-                    assigned_to_user: null,
+                    assigned_to: null,
                 }
             } else {
                 let user = await task.assigned_to;
-
                 return {
                     ...task,
-                    assigned_to_user: user == null ? null : {
+                    assigned_to: user == null ? null : {
                         ...user,
                         profile: await user.profile
                     },
@@ -59,7 +58,7 @@ export class TaskService {
 
             return plainToInstance(TaskDto, {
                 ...task,
-                user: {
+                assigned_to: {
                     ...user,
                     profile: await user.profile
                 }
@@ -70,7 +69,7 @@ export class TaskService {
         }
         return plainToInstance(TaskDto, {
             ...task,
-            user: null,
+            assigned_to: null,
         }, {
             excludeExtraneousValues: true,
         });
@@ -87,7 +86,7 @@ export class TaskService {
         });
         return plainToInstance(TaskDto, {
             ...task,
-            user: null,
+            assigned_to: null,
         }, {
             excludeExtraneousValues: true,
         });
@@ -109,13 +108,13 @@ export class TaskService {
             description: data.description ?? '',
             priority: data.priority,
             status: data.status,
-            assigned_to_user_id: data.assigned_to_user_id ?? undefined,
+            assigned_to_user_id: data.assigned_to_user_id,
         });
         let taskUser = await task.assigned_to;
         if (taskUser != null) {
             return plainToInstance(TaskDto, {
                 ...task,
-                user: {
+                assigned_to: {
                     ...taskUser,
                     profile: await taskUser.profile
                 }
@@ -125,7 +124,7 @@ export class TaskService {
         }
         return plainToInstance(TaskDto, {
             ...task,
-            user: null,
+            assigned_to: null,
         }, {
             excludeExtraneousValues: true,
         });

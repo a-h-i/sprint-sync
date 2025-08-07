@@ -20,6 +20,7 @@ export default function TaskBoard() {
     };
 
     const handleUpdate = (task: TaskSchemaType) => {
+        console.log(task);
         setTasks(prev => {
             const index = prev.findIndex((element) => element.id === task.id);
             if (index === -1) return prev.concat([task]);

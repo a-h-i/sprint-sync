@@ -30,7 +30,7 @@ export class ProfileController {
     @UseGuards(AuthGuard)
     @Get('/')
     async listUsers(@Query() params: ListUsersQueryParams): Promise<ListUsersResponseDto> {
-        const page = await this.profileService.list(params.pageSize, params.nextPageToken ?? null);
+        const page = await this.profileService.list(params.pageSize, params.username ?? null, params.nextPageToken ?? null);
         return plainToInstance(ListUsersResponseDto, page, {excludeExtraneousValues: true})
     }
 

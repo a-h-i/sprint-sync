@@ -3,11 +3,20 @@
 import {apiFetch} from "@/lib/api/apiFetch";
 import {UsersListResponseSchema} from "@/lib/schemas/usersListResponseSchema";
 
-export async function listUsers(pageSize: number, nextPageToken: string | null)  {
+interface ListUsersParams {
+    pageSize: number,
+    nextPageToken?: string | null,
+    username?: string | null;
+}
+
+export async function listUsers(options: ListUsersParams )  {
     const params = new URLSearchParams();
-    params.append('pageSize', pageSize.toString());
-    if (nextPageToken) {
-        params.append('nextPageToken', nextPageToken);
+    params.append('pageSize', options.pageSize.toString());
+    if (options.nextPageToken) {
+        params.append('nextPageToken', options.nextPageToken);
+    }
+    if (options.username) {
+        params.append('username', options.username);
     }
 
     const response = await apiFetch('/profile', {}, params);

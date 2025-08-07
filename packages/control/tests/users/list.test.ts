@@ -32,7 +32,7 @@ describe('list users', () => {
         const page = await listUsers(source.manager, 5);
         expect(page.users.length).toStrictEqual(5);
         expect(page.nextPageToken).not.toBeNull();
-        const nextPage = await listUsers(source.manager, 5, page.nextPageToken);
+        const nextPage = await listUsers(source.manager, 5, null, page.nextPageToken);
         expect(nextPage.users).toHaveLength(5);
         expect(nextPage.nextPageToken).toBeNull();
 

@@ -9,7 +9,7 @@ export const TaskSchema = z.object({
     description: z.string().optional().nullable(),
     priority: z.enum(TaskPriority),
     status: z.enum(TaskStatus),
-    assigned_to: z.object(UserSchema).optional().nullable(),
+    assigned_to: UserSchema.optional().nullable(),
     total_minutes: z.number(),
     created_at: z.string(),
     updated_at: z.string(),

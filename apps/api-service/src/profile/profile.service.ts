@@ -26,8 +26,8 @@ export class ProfileService {
         }
     }
 
-    async list(pageSize: number, nextPageToken: string | null) {
-        const page = await listUsers(this.source.manager, pageSize, nextPageToken ?? undefined);
+    async list(pageSize: number, username: string | null, nextPageToken: string | null) {
+        const page = await listUsers(this.source.manager, pageSize, username ?? null, nextPageToken ?? null);
         return {
             nextPageToken: page.nextPageToken,
             users: await Promise.all(page.users.map(async (user) => ({

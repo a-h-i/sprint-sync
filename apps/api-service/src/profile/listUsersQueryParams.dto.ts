@@ -10,4 +10,8 @@ export class ListUsersQueryParams {
     @Max(100)
     pageSize!: number;
 
+    @IsOptional()
+    @IsString()
+    username?: string | null;
+
 }

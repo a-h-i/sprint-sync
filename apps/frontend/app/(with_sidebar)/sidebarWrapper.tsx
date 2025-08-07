@@ -31,6 +31,7 @@ import Link from "next/link";
 import {signout} from "@/lib/auth/signout.action";
 
 import {UserSchemaType} from "@/lib/schemas/user.schema";
+import {CurrentUserContext} from "@/lib/context/currentUser.context";
 
 const navigation = [
     {name: 'Dashboard', href: '/dashboard', icon: HomeIcon},
@@ -245,7 +246,7 @@ export function SidebarWrapper({children, currentUser}: { children: React.ReactN
                     </div>
 
                     <main className="py-10">
-                        <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+                        <div className="px-4 sm:px-6 lg:px-8"><CurrentUserContext value={currentUser}>{children}</CurrentUserContext></div>
                     </main>
                 </div>
             </div>

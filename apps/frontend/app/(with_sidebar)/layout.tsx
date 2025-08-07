@@ -12,5 +12,6 @@ export default async function Layout({
 }) {
     const cookieStore = await cookies();
     const currentUser = getCurrentUser(cookieStore);
-    return <SidebarWrapper currentUser={currentUser}>{children}</SidebarWrapper>;
+    return  <SidebarWrapper currentUser={currentUser}>{children}</SidebarWrapper>
+
 }
