@@ -27,6 +27,7 @@ services:
       - PG_PASSWORD=password
       - PG_USER=db_user
       - PG_DB=sprint_sync_db
+      - JWT_SECRET=00061e533b0b926845441718e8102607f3c4cf297af080520beaca777f309b53
     image: spsync-api-image
     depends_on:
       pg-db:
