@@ -52,4 +52,15 @@ export class User {
   public static async hashPassword(password: string): Promise<string> {
     return await argon2.hash(password);
   }
+
+  async serialize(){
+    return {
+      id: this.id,
+      username: this.username,
+      is_admin: this.is_admin,
+      created_at: this.created_at.toISOString(),
+      updated_at: this.updated_at.toISOString(),
+      profile: await this.profile.then(p => p.serialize()),
+    }
+  }
 }

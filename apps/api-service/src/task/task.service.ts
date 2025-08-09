@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Task, User } from '@sprint-sync/storage'; // Using Task and Status enums
+import { Task, User } from '@sprint-sync/storage';
 import { ListTasksQueryParamsDto } from './listTasksQueryParams.dto';
 import { createTask, listTasks, updateTask } from '@sprint-sync/control';
 import { ListTasksResponseDto } from './listTasksResponse.dto';
@@ -23,24 +23,7 @@ export class TaskService {
 
     const tasks = await Promise.all(
       page.tasks.map(async (task) => {
-        if (task.assigned_to_user_id == null) {
-          return {
-            ...task,
-            assigned_to: null,
-          };
-        } else {
-          const user = await task.assigned_to;
-          return {
-            ...task,
-            assigned_to:
-              user == null
-                ? null
-                : {
-                    ...user,
-                    profile: await user.profile,
-                  },
-          };
-        }
+        return await task.serialize();
       }),
     );
     return plainToInstance(
@@ -57,32 +40,9 @@ export class TaskService {
 
   async getTaskById(id: number): Promise<TaskDto> {
     const task = await this.source.manager.findOneByOrFail(Task, { id });
-    const user = await task.assigned_to;
-    if (user != null) {
-      return plainToInstance(
-        TaskDto,
-        {
-          ...task,
-          assigned_to: {
-            ...user,
-            profile: await user.profile,
-          },
-        },
-        {
-          excludeExtraneousValues: true,
-        },
-      );
-    }
-    return plainToInstance(
-      TaskDto,
-      {
-        ...task,
-        assigned_to: null,
-      },
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    return plainToInstance(TaskDto, await task.serialize(), {
+      excludeExtraneousValues: true,
+    });
   }
 
   async create(data: CreateTaskRequestDto): Promise<TaskDto> {
@@ -94,16 +54,9 @@ export class TaskService {
       total_minutes: 0,
       assigned_to_user_id: null,
     });
-    return plainToInstance(
-      TaskDto,
-      {
-        ...task,
-        assigned_to: null,
-      },
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    return plainToInstance(TaskDto, await task.serialize(), {
+      excludeExtraneousValues: true,
+    });
   }
 
   async update(
@@ -133,31 +86,8 @@ export class TaskService {
       status: data.status,
       assigned_to_user_id: data.assigned_to_user_id,
     });
-    const taskUser = await task.assigned_to;
-    if (taskUser != null) {
-      return plainToInstance(
-        TaskDto,
-        {
-          ...task,
-          assigned_to: {
-            ...taskUser,
-            profile: await taskUser.profile,
-          },
-        },
-        {
-          excludeExtraneousValues: true,
-        },
-      );
-    }
-    return plainToInstance(
-      TaskDto,
-      {
-        ...task,
-        assigned_to: null,
-      },
-      {
-        excludeExtraneousValues: true,
-      },
-    );
+    return plainToInstance(TaskDto, await task.serialize(), {
+      excludeExtraneousValues: true,
+    });
   }
 }

@@ -25,10 +25,7 @@ export class ProfileService {
    */
   async getById(id: number) {
     const user = await this.source.manager.findOneByOrFail(User, { id });
-    return {
-      ...user,
-      profile: await user.profile,
-    };
+    return await user.serialize();
   }
 
   async list(
@@ -45,10 +42,7 @@ export class ProfileService {
     return {
       nextPageToken: page.nextPageToken,
       users: await Promise.all(
-        page.users.map(async (user) => ({
-          ...user,
-          profile: await user.profile,
-        })),
+        page.users.map(async (user) => await user.serialize()),
       ),
     };
   }

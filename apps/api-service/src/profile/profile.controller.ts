@@ -78,13 +78,8 @@ export class ProfileController {
   @Post('/')
   async createUser(@Body() body: CreateUserRequestDto): Promise<UserDto> {
     const data = await this.profileService.create(body);
-    return plainToInstance(
-      UserDto,
-      {
-        ...data.user,
-        profile: data.profile,
-      },
-      { excludeExtraneousValues: true },
-    );
+    return plainToInstance(UserDto, await data.user.serialize(), {
+      excludeExtraneousValues: true,
+    });
   }
 }
