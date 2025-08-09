@@ -21,11 +21,7 @@
     "composite": true,
     "allowJs": true
   },
-  "exclude": [
-    "node_modules",
-    "dist",
-    "eslint.config.mjs"
-  ],
+  "exclude": ["node_modules", "dist", "eslint.config.mjs"],
   "references": [
     {
       "path": "../../packages/storage"

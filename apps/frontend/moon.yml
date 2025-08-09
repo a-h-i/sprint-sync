@@ -20,6 +20,7 @@ tasks:
     deps:
       - 'control:build'
       - 'enums:build'
+      - 'seeder:build'
   build:
     command: pnpm run build
     inputs:

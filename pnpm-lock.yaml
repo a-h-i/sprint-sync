@@ -399,10 +399,16 @@ importers:
       '@sprint-sync/storage':
         specifier: workspace:^
         version: link:../../packages/storage
+      typeorm:
+        specifier: 'catalog:'
+        version: 0.3.25(pg@8.16.3)(reflect-metadata@0.2.2)(ts-node@10.9.2(@swc/core@1.13.3)(@types/node@24.1.0)(typescript@5.8.3))
     devDependencies:
       '@eslint/eslintrc':
         specifier: 'catalog:'
         version: 3.3.1
+      '@eslint/js':
+        specifier: 'catalog:'
+        version: 9.32.0
       '@types/node':
         specifier: 'catalog:'
         version: 24.1.0
@@ -412,6 +418,9 @@ importers:
       eslint-config-next:
         specifier: 'catalog:'
         version: 15.4.5(eslint@9.32.0(jiti@2.5.1))(typescript@5.8.3)
+      eslint-plugin-prettier:
+        specifier: 'catalog:'
+        version: 5.5.3(@types/eslint@9.6.1)(eslint-config-prettier@10.1.8(eslint@9.32.0(jiti@2.5.1)))(eslint@9.32.0(jiti@2.5.1))(prettier@3.6.2)
       prettier:
         specifier: 'catalog:'
         version: 3.6.2

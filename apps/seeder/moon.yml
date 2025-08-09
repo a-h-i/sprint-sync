@@ -1,13 +1,13 @@
-language: "typescript"
+language: 'typescript'
 type: application
 
 fileGroups:
   configs:
-    - "package.json"
-    - "tsconfig.json"
-    - "eslint.config.mjs"
+    - 'package.json'
+    - 'tsconfig.json'
+    - 'eslint.config.mjs'
   sources:
-    - "src/**/*"
+    - 'src/**/*'
 
 tasks:
   build:

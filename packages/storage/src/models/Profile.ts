@@ -24,12 +24,12 @@ export class Profile {
   @Column({ type: 'timestamp', default: () => new Date() })
   updated_at!: Date;
 
-  async serialize(){
+  async serialize() {
     return {
       first_name: this.first_name,
       last_name: this.last_name,
       created_at: this.created_at.toISOString(),
       updated_at: this.updated_at.toISOString(),
-    }
+    };
   }
 }

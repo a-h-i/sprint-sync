@@ -4,7 +4,6 @@ ENV PROTO_HOME="/.proto"
 ENV PATH="$PROTO_HOME/shims:$PROTO_HOME/bin:$PATH"
 ENV SHELL=/bin/bash
 
-USER root
 
 
 RUN mkdir -p /app/.moon

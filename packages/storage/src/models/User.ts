@@ -53,14 +53,14 @@ export class User {
     return await argon2.hash(password);
   }
 
-  async serialize(){
+  async serialize() {
     return {
       id: this.id,
       username: this.username,
       is_admin: this.is_admin,
       created_at: this.created_at.toISOString(),
       updated_at: this.updated_at.toISOString(),
-      profile: await this.profile.then(p => p.serialize()),
-    }
+      profile: await this.profile.then((p) => p.serialize()),
+    };
   }
 }
