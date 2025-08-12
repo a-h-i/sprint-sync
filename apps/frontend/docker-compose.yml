@@ -28,6 +28,7 @@ services:
       - PG_PASSWORD=password
       - PG_USER=db_user
       - PG_DB=sprint_sync_db
+      - JWT_SECRET=00061e533b0b926845441718e8102607f3c4cf297af080520beaca777f309b53
     image: spsync-api-image
     depends_on:
       pg-db:
@@ -38,6 +39,24 @@ services:
       - ../../:/app
     working_dir: /app/apps/api-service
     command: pnpm run start:dev
+  seeder:
+    environment:
+      - PG_MASTER_HOST=pg-db
+      - PG_MASTER_PORT=5432
+      - PG_PASSWORD=password
+      - PG_USER=db_user
+      - PG_DB=sprint_sync_db
+      - JWT_SECRET=00061e533b0b926845441718e8102607f3c4cf297af080520beaca777f309b53
+    depends_on:
+      pg-db:
+        condition: service_started
+      spsync-api-image:
+        condition: service_completed_successfully
+    volumes:
+      - ../../:/app
+    working_dir: /app/apps/seeder
+    image: spsync-api-image
+    command: pnpm run seed
   dev:
     environment:
       - API_URL=http://api-service:3000
@@ -47,8 +66,10 @@ services:
         condition: service_started
       api-service:
         condition: service_started
+      seeder:
+        condition: service_completed_successfully
     ports:
-      - "3000:3000"
+      - '3000:3000'
     volumes:
       - ../../:/app
     working_dir: /app/apps/frontend

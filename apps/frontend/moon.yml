@@ -19,6 +19,8 @@ tasks:
     local: true
     deps:
       - 'control:build'
+      - 'enums:build'
+      - 'seeder:build'
   build:
     command: pnpm run build
     inputs:
@@ -26,6 +28,8 @@ tasks:
       - '@files(sources)'
     outputs:
       - '.next'
+    deps:
+      - 'enums:build'
   prod:
     command: pnpm run start
     deps:

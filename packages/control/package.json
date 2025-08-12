@@ -30,6 +30,7 @@
   "dependencies": {
     "@sprint-sync/storage": "workspace:^",
     "reflect-metadata": "catalog:",
-    "typeorm": "catalog:"
+    "typeorm": "catalog:",
+    "zod": "catalog:"
   }
 }

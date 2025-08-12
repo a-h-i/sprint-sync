@@ -4,6 +4,5 @@
     "lib": ["ESNext"],
     "outDir": null,
     "module": "CommonJS"
-
   }
 }

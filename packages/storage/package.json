@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "catalog:",
+    "@sprint-sync/enums": "workspace:^",
     "argon2": "catalog:",
     "factory-girl": "catalog:",
     "pg": "catalog:",

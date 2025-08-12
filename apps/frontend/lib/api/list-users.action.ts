@@ -1,21 +1,31 @@
 'use server';
 
-import {apiFetch} from "@/lib/api/apiFetch";
-import {UsersListResponseSchema} from "@/lib/schemas/usersListResponseSchema";
+import { apiFetch } from '@/lib/api/apiFetch';
+import { UsersListResponseSchema } from '@/lib/schemas/usersListResponseSchema';
 
-export async function listUsers(pageSize: number, nextPageToken: string | null)  {
-    const params = new URLSearchParams();
-    params.append('pageSize', pageSize.toString());
-    if (nextPageToken) {
-        params.append('nextPageToken', nextPageToken);
-    }
+interface ListUsersParams {
+  pageSize: number;
+  nextPageToken?: string | null;
+  username?: string | null;
+}
 
-    const response = await apiFetch('/profile', {}, params);
-    const json = await response.json();
+export async function listUsers(options: ListUsersParams) {
+  const params = new URLSearchParams();
+  params.append('pageSize', options.pageSize.toString());
+  if (options.nextPageToken) {
+    params.append('nextPageToken', options.nextPageToken);
+  }
+  if (options.username) {
+    params.append('username', options.username);
+  }
 
-    if (!response.ok) {
-        throw new Error('Unknown server error');
-    }
+  const response = await apiFetch('/profile', {}, params);
+  const json = await response.json();
 
-    return UsersListResponseSchema.parse(json);
+  if (!response.ok) {
+    console.error(json);
+    throw new Error('Unknown server error');
+  }
+
+  return UsersListResponseSchema.parse(json);
 }

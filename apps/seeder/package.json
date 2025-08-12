@@ -1,0 +1,32 @@
+{
+  "name": "@sprint-sync/seeder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/src/main.js",
+  "scripts": {
+    "build": "tsc",
+    "seed": "node ./dist/src/main.js",
+    "lint": "eslint src eslint.config.mjs --cache",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.8.0",
+  "devDependencies": {
+    "@eslint/eslintrc": "catalog:",
+    "@eslint/js": "catalog:",
+    "@types/node": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:",
+    "eslint-plugin-prettier": "catalog:",
+    "prettier": "catalog:",
+    "ts-node": "catalog:",
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@sprint-sync/storage": "workspace:^",
+    "typeorm": "catalog:"
+  }
+}

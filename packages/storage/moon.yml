@@ -18,6 +18,8 @@ tasks:
       - '@files(configs)'
     outputs:
       - 'lib'
+    deps:
+      - enums:build
   format:
     inputs:
       - '@files(configs)'

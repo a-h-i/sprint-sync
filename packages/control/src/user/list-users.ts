@@ -9,7 +9,8 @@ interface UsersPage {
 export async function listUsers(
   manager: EntityManager,
   pageSize: number,
-  nextPageToken?: string,
+  username?: string | null,
+  nextPageToken?: string | null,
 ): Promise<UsersPage> {
   let query = manager
     .createQueryBuilder()
@@ -17,8 +18,15 @@ export async function listUsers(
     .from(User, 'user')
     .orderBy('user.id', 'ASC')
     .limit(pageSize + 1);
+
+  if (username != null && username.trim().length > 0) {
+    query = query.andWhere("user.username ilike (:username || '%')", {
+      username: username,
+    });
+  }
+
   if (nextPageToken != null) {
-    query = query.where('user.id >= :nextPageToken', {
+    query = query.andWhere('user.id >= :nextPageToken', {
       nextPageToken: nextPageToken,
     });
   }
@@ -34,6 +42,5 @@ export async function listUsers(
       users: page,
       nextPageToken: null,
     };
-
   }
 }
