@@ -20,7 +20,7 @@ export async function listUsers(
     .limit(pageSize + 1);
 
   if (username != null && username.trim().length > 0) {
-    query = query.andWhere('user.username ilike (:username || \'%\')', {
+    query = query.andWhere("user.username ilike (:username || '%')", {
       username: username,
     });
   }

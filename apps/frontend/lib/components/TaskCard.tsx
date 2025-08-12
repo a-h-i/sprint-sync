@@ -32,7 +32,9 @@ export default function TaskCard(props: TaskCardProps) {
         </StatusBadge>
 
         <Badge color='gray'>
-          {props.task.assigned_to != null ? `@${props.task.assigned_to.username}` : 'Unassigned'}
+          {props.task.assigned_to != null
+            ? `@${props.task.assigned_to.username}`
+            : 'Unassigned'}
         </Badge>
       </div>
       {editingTask && (
