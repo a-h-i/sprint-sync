@@ -39,7 +39,7 @@ export default function ModalDialog(props: ModalDialogProps) {
             leaveFrom='opacity-100 scale-100'
             leaveTo='opacity-0 scale-95'
           >
-            <DialogPanel className='w-full max-w-lg transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all'>
+            <DialogPanel className='w-full max-w-lg transform rounded-lg bg-white p-6 shadow-xl transition-all'>
               <button
                 onClick={props.onClose}
                 className='absolute top-4 right-4 text-gray-500 hover:text-gray-700'

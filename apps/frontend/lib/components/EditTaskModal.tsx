@@ -129,7 +129,7 @@ export default function EditTaskModal({
     <ModalDialog open onClose={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Task</DialogTitle>
+          <DialogTitle>Edit Task #{task.id}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
@@ -143,7 +143,7 @@ export default function EditTaskModal({
 
           <div>
             <Label>Description</Label>
-            <TextArea {...register('description')} />
+            <TextArea rows={10} {...register('description')} />
           </div>
 
           <div className='flex gap-4'>
@@ -222,7 +222,7 @@ export default function EditTaskModal({
                 }
               >
                 <Combobox
-                  value={selectedUser}
+                  value={selectedUser ?? null}
                   onChange={(user: UserSchemaType | null) => {
                     setValue('assigned_to_user_id', user?.id ?? null, {
                       shouldDirty: true,
@@ -234,7 +234,7 @@ export default function EditTaskModal({
                     <ComboboxInput
                       className={`w-full rounded border p-2 ${!currentUser?.is_admin ? 'bg-gray-100 text-gray-500' : ''}`}
                       displayValue={(user: UserSchemaType | null) =>
-                        user?.username ?? ''
+                        user?.username != null ? `@${user.username}` : ''
                       }
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder={

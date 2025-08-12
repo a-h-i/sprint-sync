@@ -11,6 +11,10 @@ async function seed() {
   const source = await setupPostgres(true);
   FactoryGirl.setAdapter(new FactoryGirlTypeOrmAdapter(source));
   try {
+    const usersCount = await source.manager.count(User);
+    if (usersCount > 0) {
+      return;
+    }
     const { profiles } = await createUsers();
     for (const profile of profiles) {
       const user = await source.manager.findOneByOrFail(User, {

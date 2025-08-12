@@ -19,14 +19,14 @@ export async function listUsers(
     .orderBy('user.id', 'ASC')
     .limit(pageSize + 1);
 
-  if (username != null) {
-    query = query.where('user.username like :username || %', {
+  if (username != null && username.trim().length > 0) {
+    query = query.andWhere('user.username ilike (:username || \'%\')', {
       username: username,
     });
   }
 
   if (nextPageToken != null) {
-    query = query.where('user.id >= :nextPageToken', {
+    query = query.andWhere('user.id >= :nextPageToken', {
       nextPageToken: nextPageToken,
     });
   }

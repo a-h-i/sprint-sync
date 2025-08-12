@@ -23,6 +23,7 @@ export async function listUsers(options: ListUsersParams) {
   const json = await response.json();
 
   if (!response.ok) {
+    console.error(json);
     throw new Error('Unknown server error');
   }
 
