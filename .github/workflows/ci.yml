@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 0
       - uses: 'moonrepo/setup-toolchain@v0'
       - name: 'setup'
-        run: 'moon setup'
+        run: 'proto use'
       - name: moon-ci
         run: 'moon ci --color'
         env:
