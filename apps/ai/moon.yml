@@ -1,0 +1,42 @@
+language: python
+type: application
+
+fileGroups:
+  config:
+    - 'pyproject.toml'
+  src:
+    - 'src/**/*.py'
+
+
+tasks:
+  install:
+    command: poetry sync
+    inputs:
+      - '@files(config)'
+  dev:
+    command: python -m hypercorn 'src.ai:app' --bind 0.0.0.0:8000 --reload --log-level debug
+    local: true
+    deps:
+      - "install"
+  prod:
+    command: python -m hypercorn 'src.ai:app' --bind 0.0.0.0:8000
+    local: true
+    deps:
+      - "install"
+  format:
+    command: "poetry"
+    args: [ "run", "ruff", "format", "." ]
+    deps:
+      - "install"
+    inputs:
+      - "@group(src)"
+      - "@group(config)"
+
+  typecheck:
+    command: "poetry"
+    args: [ "run", "pyright" ]
+    deps:
+      - "install"
+    inputs:
+      - "@group(src)"
+      - "@group(config)"

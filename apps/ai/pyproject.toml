@@ -1,0 +1,27 @@
+[project]
+name = "ai"
+version = "0.1.0"
+description = "AI backend"
+authors = [
+    {name = "Ahmed Hisham", email = "ahm3d.hisham@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9,<4.0"
+dependencies = [
+    "quart (>=0.20.0,<0.21.0)",
+    "hypercorn (>=0.17.3,<0.18.0)",
+    "pydantic (>=2.11.7,<3.0.0)",
+    "langgraph (>=0.6.4,<0.7.0)",
+    "langchain[openai] (>=0.3.27,<0.4.0)",
+    "load-dotenv (>=0.1.0,<0.2.0)",
+    "langchain-core (>=0.3.74,<0.4.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.12.8"
+pyright = "^1.1.403"
+
