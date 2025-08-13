@@ -39,6 +39,21 @@ services:
       - ../../:/app
     working_dir: /app/apps/api-service
     command: pnpm run start:dev
+    ports:
+      - "3001:3000"
+  ai-service:
+    image: spsync-api-image
+    depends_on:
+      spsync-api-image:
+        condition: service_completed_successfully
+    volumes:
+      - ../../:/app
+    working_dir: /app/apps/ai
+    ports:
+      - "8000:8000"
+    command: >
+      bash -c "poetry sync &&
+      poetry run hypercorn 'src.ai:app' --bind 0.0.0.0:8000 --reload --log-level debug"
   seeder:
     environment:
       - PG_MASTER_HOST=pg-db
@@ -60,11 +75,14 @@ services:
   dev:
     environment:
       - API_URL=http://api-service:3000
+      - AI_API_URL=http://ai-service:8000
     image: spsync-api-image
     depends_on:
       pg-db:
         condition: service_started
       api-service:
+        condition: service_started
+      ai-service:
         condition: service_started
       seeder:
         condition: service_completed_successfully

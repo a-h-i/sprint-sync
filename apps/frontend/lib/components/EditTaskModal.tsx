@@ -18,7 +18,6 @@ import {
 import { updateTask } from '@/lib/api/updateTask.action';
 import toast from 'react-hot-toast';
 import {
-  Button,
   Combobox,
   ComboboxInput,
   ComboboxOption,
@@ -38,6 +37,7 @@ import { clsx } from 'clsx';
 import { UserSchemaType } from '@/lib/schemas/user.schema';
 import { debounce } from 'lodash';
 import { listUsers } from '@/lib/api/list-users.action';
+import Button from '@/lib/components/Button';
 
 interface EditTaskModalProps {
   task: TaskSchemaType;
@@ -180,11 +180,11 @@ export default function EditTaskModal({
           <div className='space-y-2'>
             <Label>Assignment</Label>
             <div className='flex gap-2'>
-              <button
+              <Button
                 type='button'
                 onClick={assignToMe}
+                variant='primary'
                 className={clsx(
-                  'rounded bg-blue-600 px-3 py-1.5 text-white hover:bg-blue-700',
                   {
                     hidden: isAssignedToMe,
                   },
@@ -192,10 +192,11 @@ export default function EditTaskModal({
                 title='Assign this task to yourself'
               >
                 Assign to me
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type='button'
+                variant='secondary'
                 onClick={unassign}
                 className={clsx(
                   'rounded bg-gray-200 px-3 py-1.5 hover:bg-gray-300',
@@ -206,7 +207,7 @@ export default function EditTaskModal({
                 title='Remove current assignee'
               >
                 Unassign
-              </button>
+              </Button>
             </div>
 
             <div className='relative'>
@@ -280,7 +281,7 @@ export default function EditTaskModal({
           </div>
 
           <Button
-            className='me-2 mb-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+            variant='primary'
             type='submit'
             disabled={isPending}
           >

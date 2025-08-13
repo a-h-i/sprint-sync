@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Label from '@/lib/components/Label';
 import Input from '@/lib/components/Input';
 import { clsx } from 'clsx';
+import Button from '@/lib/components/Button';
 
 export default function Page() {
   const [isPending, startTransition] = useTransition();
@@ -75,16 +76,13 @@ export default function Page() {
           )}
         </div>
 
-        <button
+        <Button
           type='submit'
           disabled={isPending}
-          className={clsx('w-full rounded py-2 text-white', {
-            'cursor-not-allowed bg-blue-400': isPending,
-            'bg-blue-600 hover:bg-blue-700': !isPending,
-          })}
+          variant='primary'
         >
           {isPending ? 'Logging in…' : 'Login'}
-        </button>
+        </Button>
         <div className='text-center text-sm text-gray-600'>
           Don&apos;t have an account?{' '}
           <Link
