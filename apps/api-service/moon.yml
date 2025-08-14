@@ -23,6 +23,11 @@ tasks:
     deps:
       - 'storage:build'
       - 'control:build'
+  prod:
+    command: 'pnpm run start:prod'
+    deps:
+      - 'build'
+    local: true
   test:
     command: 'docker compose run --remove-orphans tests'
     inputs:

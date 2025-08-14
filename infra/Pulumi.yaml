@@ -1,0 +1,10 @@
+name: sprint-sync-infra
+description: cluster setup for sprint-sync
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: typescript

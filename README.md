@@ -23,5 +23,7 @@ next we install node requirements via `pnpm install` at repo root.
 ### Dev server
 To launch dev server with minimal hassle use
 `moon frontend:dev` the server should be accessible from `localhost:3000`
+However you will need to create a .env file in the apps/ai folder with your openapi key.
+The template for the file is in the [.env.template](apps/ai/.env.template) file
 
 Each application has its own README.md file.

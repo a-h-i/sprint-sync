@@ -1,0 +1,13 @@
+{
+    "name": "sprint-sync-infra",
+    "main": "index.ts",
+    "devDependencies": {
+        "@types/node": "^18.19.122",
+        "typescript": "^5.0.0"
+    },
+    "dependencies": {
+        "@pulumi/digitalocean": "^4.49.0",
+        "@pulumi/kubernetes": "^4.23.0",
+        "@pulumi/pulumi": "^3.113.0"
+    }
+}

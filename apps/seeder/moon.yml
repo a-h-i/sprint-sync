@@ -19,6 +19,11 @@ tasks:
       - 'dist'
     deps:
       - 'storage:build'
+  seed:
+    command: 'pnpm run seed'
+    deps:
+      - 'build'
+    local: true
   format:
     inputs:
       - '@files(configs)'

@@ -1,0 +1,7 @@
+config:
+  openai:token:
+    secure: AAABAKHClHxOvGVHLQvt8JVzxU42RgTH5N1PcOeREJcEbJcpOwZTohB/83gq6mNCI/1SAvLIU2A/Tj8INR/v4J2civLUadCTIzLlGf5rUeqj/HZR0lzfQ5nbNoy+ZrFEcVdAptoNKD/FEt5EjkSd7CqxxpLPuwybv5PCtpK8wQU7RLlZrViEmjbrGwqxrq3A5eONQNuPg2/lfjXd16XuI+9Xipsfif8sJz+tgtO0kboKjxRJ+mVLNVQIpfA1rKyROGgN8w==
+  db:username: sprint_sync_db_user
+  db:name: sprint_sync_db
+  db:password:
+    secure: AAABAMYk9EqkC/S/U+B2GVL07YCfGgRJsMvJjpLpr/Vs4ulXMgT0MsglkWI6G8i3
