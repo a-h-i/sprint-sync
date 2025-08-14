@@ -11,3 +11,5 @@ config:
   grafana:adminPassword:
     secure: AAABAFLKDAcXq+cB4e8qoDfLnIQneaQJe4kNdYWL+mXs+geMhHdwd+f/uUIugjEwegVQ/w==
   image:name: main-f982088-1755177294
+  digitalocean:token:
+    secure: AAABANTQaAzle8LDe5XQNzftHhrn1T5MRBzt1oQLuJGwEQANYJng5QoVHY57FF+Y1RcbonY1uCLieRsqH3JsM6KK/NHp0dNEapCsx7w3E6QvXrxcadV/vN/m0jzb0SHPaTev8OFbkQ==
