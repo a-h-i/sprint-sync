@@ -1,9 +1,5 @@
 import * as digitalocean from "@pulumi/digitalocean";
 
-// Reserve a static IP for ingress
-export const staticIp = new digitalocean.FloatingIp("nginx-ip", {
-    region: "fra1",
-});
 
 export const cluster = new digitalocean.KubernetesCluster("do-cluster", {
     region: "fra1",

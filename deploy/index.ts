@@ -20,7 +20,6 @@ const imageName = imageConfig.require("name");
 
 const infra = new pulumi.StackReference("a-h-i/sprint-sync-infra/production");
 const kubeconfig = infra.getOutput("kubeconfig");
-const staticIp = infra.getOutput("staticIp");
 
 const k8sProvider = new k8s.Provider("do-k8s", {
     kubeconfig: kubeconfig,
@@ -458,22 +457,17 @@ const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
     },
 }, {provider: k8sProvider});
 
-const staticIpStr = pulumi.output(staticIp).apply((v: FloatingIp) =>
-    v.ipAddress
-);
 
 const ingressNginx = new k8s.helm.v3.Chart("ingress-nginx", {
     chart: "ingress-nginx",
     version: "4.13.1",
-    fetchOpts: { repo: "https://kubernetes.github.io/ingress-nginx" },
+    fetchOpts: {repo: "https://kubernetes.github.io/ingress-nginx"},
     namespace: appNamespace.metadata.name,
     values: {
         controller: {
             service: {
                 type: "LoadBalancer",
-                annotations: {
-                    "service.beta.kubernetes.io/do-loadbalancer-ip": staticIpStr,
-                },
+
 
             },
         },
@@ -481,7 +475,6 @@ const ingressNginx = new k8s.helm.v3.Chart("ingress-nginx", {
 }, {
     provider: k8sProvider
 });
-
 
 
 // Seeding the database
