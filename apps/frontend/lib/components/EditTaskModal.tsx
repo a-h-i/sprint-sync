@@ -54,7 +54,7 @@ export default function EditTaskModal({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty, isValid },
     setValue,
     watch,
   } = useForm<EditTaskSchemaType>({
@@ -144,6 +144,11 @@ export default function EditTaskModal({
           <div>
             <Label>Description</Label>
             <TextArea rows={10} {...register('description')} />
+            {errors.description && (
+              <p className='text-sm text-red-500'>
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           <div className='flex gap-4'>
@@ -184,11 +189,9 @@ export default function EditTaskModal({
                 type='button'
                 onClick={assignToMe}
                 variant='primary'
-                className={clsx(
-                  {
-                    hidden: isAssignedToMe,
-                  },
-                )}
+                className={clsx({
+                  hidden: isAssignedToMe,
+                })}
                 title='Assign this task to yourself'
               >
                 Assign to me
@@ -283,7 +286,7 @@ export default function EditTaskModal({
           <Button
             variant='primary'
             type='submit'
-            disabled={isPending}
+            disabled={isPending || !isDirty || !isValid}
           >
             {isPending ? 'Saving...' : 'Save'}
           </Button>

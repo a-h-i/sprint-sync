@@ -16,12 +16,14 @@
     "@hookform/resolvers": "catalog:",
     "@sprint-sync/enums": "workspace:^",
     "clsx": "catalog:",
+    "immer": "^10.1.1",
     "lodash": "catalog:",
     "next": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-hook-form": "catalog:",
     "react-hot-toast": "catalog:",
+    "use-immer": "^0.11.0",
     "zod": "catalog:"
   },
   "devDependencies": {

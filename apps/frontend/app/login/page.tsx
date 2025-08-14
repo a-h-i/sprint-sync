@@ -9,7 +9,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Label from '@/lib/components/Label';
 import Input from '@/lib/components/Input';
-import { clsx } from 'clsx';
 import Button from '@/lib/components/Button';
 
 export default function Page() {
@@ -76,11 +75,7 @@ export default function Page() {
           )}
         </div>
 
-        <Button
-          type='submit'
-          disabled={isPending}
-          variant='primary'
-        >
+        <Button type='submit' disabled={isPending} variant='primary'>
           {isPending ? 'Logging in…' : 'Login'}
         </Button>
         <div className='text-center text-sm text-gray-600'>

@@ -40,7 +40,7 @@ services:
     working_dir: /app/apps/api-service
     command: pnpm run start:dev
     ports:
-      - "3001:3000"
+      - '3001:3000'
   ai-service:
     image: spsync-api-image
     depends_on:
@@ -50,7 +50,7 @@ services:
       - ../../:/app
     working_dir: /app/apps/ai
     ports:
-      - "8000:8000"
+      - '8000:8000'
     command: >
       bash -c "poetry sync &&
       poetry run hypercorn 'src.ai:app' --bind 0.0.0.0:8000 --reload --log-level debug"

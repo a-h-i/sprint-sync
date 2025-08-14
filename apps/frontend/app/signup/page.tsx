@@ -103,11 +103,7 @@ export default function Page() {
           )}
         </div>
 
-        <Button
-          type='submit'
-          disabled={isPending}
-          variant='primary'
-        >
+        <Button type='submit' disabled={isPending} variant='primary'>
           {isPending ? 'Creating account…' : 'Sign Up'}
         </Button>
 

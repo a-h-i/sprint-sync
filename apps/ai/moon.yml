@@ -13,6 +13,8 @@ tasks:
     command: poetry sync
     inputs:
       - '@files(config)'
+    options:
+      cache: false
   dev:
     command: python -m hypercorn 'src.ai:app' --bind 0.0.0.0:8000 --reload --log-level debug
     local: true
