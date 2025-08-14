@@ -9,9 +9,9 @@ ENV NODE_OPTIONS=--max-old-space-size=8192
 
 RUN mkdir -p /app
 ADD . /app
+WORKDIR /app
 ADD .prototools .
 ADD .moon .moon
-WORKDIR /app
 
 RUN npm install -g @moonrepo/cli
 RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash
