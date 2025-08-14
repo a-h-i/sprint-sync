@@ -310,8 +310,7 @@ const loki = new k8s.helm.v3.Chart("loki", {
             storage: {type: "filesystem"},
             storage_config: {
                 filesystem: {
-                    chunks_directory: "/var/loki/chunks",
-                    rules_directory: "/var/loki/rules",
+                    directory: "/var/loki",
                 },
             },
             commonConfig: {replication_factor: 1},
