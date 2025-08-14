@@ -302,7 +302,7 @@ const loki = new k8s.helm.v3.Chart("loki", {
     fetchOpts: {repo: "https://grafana.github.io/helm-charts"},
     namespace: obsNs.metadata.name,
     values: {
-        deploymentMode: "SingleBinary<->SimpleScalable",
+        deploymentMode: "SingleBinary",
         singleBinary: {
             replicas: 1,
             persistence: {
@@ -310,15 +310,19 @@ const loki = new k8s.helm.v3.Chart("loki", {
                 size: "10Gi",
                 storageClassName: "do-block-storage",
             },
+            resources: {
+                requests: { cpu: "100m", memory: "256Mi" },
+                limits:   { cpu: "500m", memory: "512Mi" },
+            },
         },
         loki: {
             storage: {type: "filesystem"},
+            commonConfig: { replication_factor: 1 },
             storage_config: {
                 filesystem: {
                     directory: "/var/loki",
                 },
             },
-            commonConfig: {replication_factor: 1},
             schemaConfig: {
                 configs: [{
                     from: "2024-04-01",
@@ -328,6 +332,21 @@ const loki = new k8s.helm.v3.Chart("loki", {
                     index: {prefix: "loki_index_", period: "24h"},
                 }],
             },
+            backend:        { replicas: 0 },
+            read:           { replicas: 0 },
+            write:          { replicas: 0 },
+            ingester:       { replicas: 0 },
+            querier:        { replicas: 0 },
+            queryFrontend:  { replicas: 0 },
+            queryScheduler: { replicas: 0 },
+            distributor:    { replicas: 0 },
+            compactor:      { replicas: 0 },
+            indexGateway:   { replicas: 0 },
+            bloomCompactor: { replicas: 0 },
+            bloomGateway:   { replicas: 0 },
+            resultsCache: { enabled: false },
+            chunksCache:  { enabled: false },
+            gateway: { enabled: true },
         },
     },
 }, {provider: k8sProvider});
@@ -370,7 +389,6 @@ const grafana = new k8s.helm.v3.Chart("grafana", {
             },
         },
 
-        // Serve Grafana from a subpath (/grafana) so we can path-route via NGINX
         grafana: {
             grafanaIni: {
                 server: {
@@ -450,11 +468,10 @@ const backendIngress = new k8s.networking.v1.Ingress("ingress-backend", {
         rules: [{
             http: {
                 paths: [{
-                    // strip /backend from the request path
                     path: "/backend(/|$)(.*)",
                     pathType: "ImplementationSpecific",
                     backend: {
-                        service: {name: backendService.metadata.name, port: {number: 3000}},
+                        service: {name: 'backend', port: {number: 3000}},
                     },
                 }],
             },
@@ -479,7 +496,7 @@ const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
                     path: "/",
                     pathType: "Prefix",
                     backend: {
-                        service: {name: frontendService.metadata.name, port: {number: 3000}},
+                        service: {name: 'frontend', port: {number: 3000}},
                     },
                 }],
             },

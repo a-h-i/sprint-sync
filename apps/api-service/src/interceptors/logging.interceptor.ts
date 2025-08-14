@@ -9,6 +9,7 @@ import { Observable, tap } from 'rxjs';
 import { logRequest } from '../logging/logReuest';
 import { User } from '@sprint-sync/storage';
 import { Request, Response } from 'express';
+import * as process from 'node:process';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -28,6 +29,7 @@ export class LoggingInterceptor implements NestInterceptor {
           userId: (request['user'] as User)?.id ?? 'anonymous',
           statusCode: response.statusCode,
           startTime: request['_startTime'] as bigint,
+          cwd: process.cwd(),
         });
       }),
     );

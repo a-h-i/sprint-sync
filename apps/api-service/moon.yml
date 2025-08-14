@@ -23,6 +23,12 @@ tasks:
     deps:
       - 'storage:build'
       - 'control:build'
+  dev:
+    command: 'docker compose up dev'
+    deps:
+      - 'build'
+    local: true
+
   prod:
     command: 'pnpm run start:prod'
     deps:

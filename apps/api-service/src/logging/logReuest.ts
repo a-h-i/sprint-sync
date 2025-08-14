@@ -7,6 +7,7 @@ interface IMessage {
   statusCode: number;
   startTime: bigint;
   error?: unknown;
+  cwd: string;
 }
 
 export function logRequest(logger: Logger, message: IMessage) {
@@ -19,5 +20,6 @@ export function logRequest(logger: Logger, message: IMessage) {
     statusCode: message.statusCode,
     latencyMs: latencyMs.toString(10),
     error: message.error,
+    cwd: message.cwd,
   });
 }

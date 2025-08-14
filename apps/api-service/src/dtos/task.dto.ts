@@ -1,7 +1,18 @@
 import { Expose, Type } from 'class-transformer';
-import { TaskPriority, TaskStatus } from '@sprint-sync/storage';
 import { UserDto } from './user.dto';
 
+// recreates enums to bypass bug in nestcli/swagger require path generation in monorepo
+enum TaskPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+}
+
+enum TaskStatus {
+  TODO = 'todo',
+  IN_PROGRESS = 'in_progress',
+  DONE = 'done',
+}
 export class TaskDto {
   @Expose()
   id!: number;

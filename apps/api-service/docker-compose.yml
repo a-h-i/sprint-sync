@@ -47,7 +47,7 @@ services:
       - PG_DB=sprint_sync_db
     image: spsync-api-image
     ports:
-      - "3001:3000"
+      - "3002:3000"
     depends_on:
       pg-db:
         condition: service_started

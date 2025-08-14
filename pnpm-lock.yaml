@@ -223,6 +223,9 @@ importers:
       '@sprint-sync/control':
         specifier: workspace:^
         version: link:../../packages/control
+      '@sprint-sync/enums':
+        specifier: workspace:^
+        version: link:../../packages/enums
       '@sprint-sync/storage':
         specifier: workspace:^
         version: link:../../packages/storage

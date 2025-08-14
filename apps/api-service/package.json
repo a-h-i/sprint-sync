@@ -29,6 +29,7 @@
     "@nestjs/swagger": "catalog:",
     "@nestjs/typeorm": "catalog:",
     "@sprint-sync/control": "workspace:^",
+    "@sprint-sync/enums": "workspace:^",
     "@sprint-sync/storage": "workspace:^",
     "class-transformer": "catalog:",
     "class-validator": "catalog:",

@@ -9,6 +9,7 @@ import { logRequest } from '../logging/logReuest';
 import { EntityNotFoundError } from 'typeorm';
 import { Request, Response } from 'express';
 import { User } from '@sprint-sync/storage';
+import * as process from 'node:process';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -37,6 +38,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       startTime: (req['_startTime'] as bigint) ?? process.hrtime.bigint(),
       error:
         exception instanceof Error ? exception : new Error(String(exception)),
+      cwd: process.cwd()
     });
 
     res.status(status).json({
