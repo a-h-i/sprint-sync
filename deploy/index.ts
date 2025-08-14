@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
-
+import * as random from "@pulumi/random";
+import {provider} from "@pulumi/pulumi";
 
 const dbConfig = new pulumi.Config("db");
 const dbUser = dbConfig.require("username");
@@ -9,6 +10,9 @@ const dbName = dbConfig.require("name");
 
 const openaiConfig = new pulumi.Config("openai");
 const openaiApiKey = openaiConfig.requireSecret("token");
+
+const authConfig = new pulumi.Config("auth");
+const jwtToken = authConfig.requireSecret("jwt_token");
 
 const infra = new pulumi.StackReference("sprint-sync-infra/production");
 const kubeconfig = infra.getOutput("kubeconfig");
@@ -40,6 +44,13 @@ const openaiSecret = new k8s.core.v1.Secret("openai-secret", {
     provider: k8sProvider,
 });
 
+const jwtSecret = new k8s.core.v1.Secret("jwt-secret", {
+    metadata: {namespace: appNamespace.metadata.name},
+    stringData: {
+        JWT_SECRET: jwtToken,
+    },
+}, {provider: k8sProvider},)
+
 const pgPVC = new k8s.core.v1.PersistentVolumeClaim("pg-pvc", {
     metadata: {namespace: appNamespace.metadata.name},
     spec: {
@@ -69,7 +80,7 @@ const pgDeployment = new k8s.apps.v1.Deployment("postgres", {
                             },
                         ],
                         readinessProbe: {
-                            exec: { command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""] },
+                            exec: {command: ["sh", "-c", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\""]},
                             initialDelaySeconds: 5,
                             periodSeconds: 10,
                             failureThreshold: 6,
@@ -109,6 +120,11 @@ const backendDeployment = new k8s.apps.v1.Deployment("backend", {
         template: {
             metadata: {labels: {app: "backend"}},
             spec: {
+                initContainers: [{
+                    name: "wait-for-db",
+                    image: "busybox:1.36",
+                    command: ["sh", "-c", `until nc -z ${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local 5432; do echo waiting for postgres; sleep 2; done;`]
+                }],
                 containers: [
                     {
                         name: "backend",
@@ -139,6 +155,10 @@ const backendDeployment = new k8s.apps.v1.Deployment("backend", {
                                 value: `${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local`
                             },
                             {name: "PG_MASTER_PORT", value: "5432"},
+                            {
+                                name: "JWT_SECRET",
+                                valueFrom: {secretKeyRef: {name: jwtSecret.metadata.name, key: "JWT_SECRET"}}
+                            }
                         ],
                     },
                 ],
@@ -249,6 +269,102 @@ const frontendService = new k8s.core.v1.Service("frontend-svc", {
     },
 });
 
+
+
+const obsNs = new k8s.core.v1.Namespace("observability", {
+    metadata: { name: "observability" },
+}, { provider: k8sProvider });
+
+const grafanaCfg = new pulumi.Config("grafana");
+const grafanaAdminPassword = grafanaCfg.requireSecret("adminPassword");
+
+const loki = new k8s.helm.v3.Chart("loki", {
+    chart: "loki",
+    fetchOpts: { repo: "https://grafana.github.io/helm-charts" },
+    namespace: obsNs.metadata.name,
+    // keep it simple: single-binary Loki with persistence
+    values: {
+        persistence: { enabled: true, size: "10Gi" }, // uses cluster default storage class
+        service: { type: "ClusterIP" },
+    },
+}, { provider: k8sProvider });
+
+const promtail = new k8s.helm.v3.Chart("promtail", {
+    chart: "promtail",
+    fetchOpts: { repo: "https://grafana.github.io/helm-charts" },
+    namespace: obsNs.metadata.name,
+    values: {
+        // Point to the Loki service installed above
+        config: {
+            clients: [
+                { url: "http://loki.observability.svc.cluster.local:3100/loki/api/v1/push" }
+            ],
+        },
+        // DaemonSet that tails /var/log/containers etc. defaults are fine
+    },
+}, { provider: k8sProvider, dependsOn: [loki] });
+
+const grafana = new k8s.helm.v3.Chart("grafana", {
+    chart: "grafana",
+    fetchOpts: { repo: "https://grafana.github.io/helm-charts" },
+    namespace: obsNs.metadata.name,
+    values: {
+        adminPassword: grafanaAdminPassword,
+        persistence: { enabled: true, size: "5Gi" },
+        service: { type: "ClusterIP" },
+
+        // Provision Loki as a datasource automatically
+        datasources: {
+            "datasources.yaml": {
+                apiVersion: 1,
+                datasources: [{
+                    name: "Loki",
+                    type: "loki",
+                    access: "proxy",
+                    url: "http://loki.observability.svc.cluster.local:3100",
+                    isDefault: true,
+                }],
+            },
+        },
+
+        // Serve Grafana from a subpath (/grafana) so we can path-route via NGINX
+        grafana: {
+            grafanaIni: {
+                server: {
+                    root_url: "%(protocol)s://%(domain)s/grafana",
+                    serve_from_sub_path: true,
+                },
+            },
+        },
+    },
+}, { provider: k8sProvider, dependsOn: [loki] });
+
+const grafanaIngress = new k8s.networking.v1.Ingress("grafana-ingress", {
+    metadata: {
+        name: "grafana-ingress",
+        namespace: obsNs.metadata.name,
+        annotations: {
+            "kubernetes.io/ingress.class": "nginx",
+            "nginx.ingress.kubernetes.io/use-regex": "true",
+            "nginx.ingress.kubernetes.io/rewrite-target": "/$2",
+        },
+    },
+    spec: {
+        ingressClassName: "nginx",
+        rules: [{
+            http: {
+                paths: [{
+                    path: "/grafana(/|$)(.*)",
+                    pathType: "ImplementationSpecific",
+                    backend: {
+                        service: { name: "grafana", port: { number: 80 } },
+                    },
+                }],
+            },
+        }],
+    },
+}, { provider: k8sProvider, dependsOn: [grafana] });
+
 // Ingress just for backend, with regex + rewrite
 const backendIngress = new k8s.networking.v1.Ingress("ingress-backend", {
     metadata: {
@@ -269,13 +385,13 @@ const backendIngress = new k8s.networking.v1.Ingress("ingress-backend", {
                     path: "/backend(/|$)(.*)",
                     pathType: "ImplementationSpecific",
                     backend: {
-                        service: { name: backendService.metadata.name, port: { number: 3000 } },
+                        service: {name: backendService.metadata.name, port: {number: 3000}},
                     },
                 }],
             },
         }],
     },
-}, { provider: k8sProvider });
+}, {provider: k8sProvider});
 
 // Ingress for frontend (catch-all). No rewrite needed.
 const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
@@ -294,13 +410,13 @@ const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
                     path: "/",
                     pathType: "Prefix",
                     backend: {
-                        service: { name: frontendService.metadata.name, port: { number: 3000 } },
+                        service: {name: frontendService.metadata.name, port: {number: 3000}},
                     },
                 }],
             },
         }],
     },
-}, { provider: k8sProvider });
+}, {provider: k8sProvider});
 
 const nginxServicePatch = new k8s.core.v1.ServicePatch("nginx-lb-patch", {
     metadata: {
@@ -310,4 +426,76 @@ const nginxServicePatch = new k8s.core.v1.ServicePatch("nginx-lb-patch", {
             "service.beta.kubernetes.io/do-loadbalancer-ip": staticIp,
         },
     },
-}, { provider: k8sProvider })
+}, {provider: k8sProvider});
+
+
+// Seeding the database
+
+const seederCfg = new pulumi.Config("seeder");
+const runId = seederCfg.get("runId") || pulumi.getStack(); // fallback so it has a stable value
+
+// Random suffix changes whenever runId changes → forces a new Job
+const seedSuffix = new random.RandomString("seed-suffix", {
+    length: 6,
+    upper: false,
+    special: false,
+    keepers: {runId}, // when runId changes, this resource is replaced
+});
+
+// Kubernetes Job to seed the DB
+const dbSeedJob = new k8s.batch.v1.Job("db-seed", {
+    metadata: {
+        namespace: appNamespace.metadata.name,
+        name: pulumi.interpolate`db-seed-${seedSuffix.result}`,
+
+    },
+    spec: {
+        backoffLimit: 1,
+        ttlSecondsAfterFinished: 600, // auto-clean after 10 minutes
+        template: {
+            metadata: {labels: {app: "db-seed"}},
+            spec: {
+                restartPolicy: "Never",
+                // Wait for Postgres before running seeder
+                initContainers: [{
+                    name: "wait-for-db",
+                    image: "busybox:1.36",
+                    command: ["sh", "-c", "until nc -z postgres.app.svc.cluster.local 5432; do echo waiting for postgres; sleep 2; done;"],
+                }],
+                containers: [{
+                    name: "seeder",
+                    image: "ghcr.io/a-h-i/sprint-sync:latest",
+                    args: ["seeder"],
+                    env: [
+                        {
+                            name: "PG_USER",
+                            valueFrom: {secretKeyRef: {name: dbSecret.metadata.name, key: "POSTGRES_USER"}}
+                        },
+                        {
+                            name: "PG_PASSWORD",
+                            valueFrom: {secretKeyRef: {name: dbSecret.metadata.name, key: "POSTGRES_PASSWORD"}}
+                        },
+                        {
+                            name: "PG_DB",
+                            valueFrom: {secretKeyRef: {name: dbSecret.metadata.name, key: "POSTGRES_DB"}}
+                        },
+                        {
+                            name: "PG_MASTER_HOST",
+                            value: `${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local`
+                        },
+                        {name: "PG_MASTER_PORT", value: "5432"},
+                        {
+                            name: "JWT_SECRET",
+                            valueFrom: {secretKeyRef: {name: jwtSecret.metadata.name, key: "JWT_SECRET"}}
+                        }
+                    ],
+                }],
+            },
+        },
+    },
+}, {
+    provider: k8sProvider,
+    deleteBeforeReplace: true,
+    dependsOn: [pgService],
+});
+
