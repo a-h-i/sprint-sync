@@ -14,6 +14,10 @@ const openaiApiKey = openaiConfig.requireSecret("token");
 const authConfig = new pulumi.Config("auth");
 const jwtToken = authConfig.requireSecret("jwt_token");
 
+const imageConfig = new pulumi.Config("image");
+const imageName = imageConfig.require("name");
+
+
 const infra = new pulumi.StackReference("a-h-i/sprint-sync-infra/production");
 const kubeconfig = infra.getOutput("kubeconfig");
 const staticIp = infra.getOutput("staticIp");
@@ -128,7 +132,7 @@ const backendDeployment = new k8s.apps.v1.Deployment("backend", {
                 containers: [
                     {
                         name: "backend",
-                        image: `ghcr.io/a-h-i/sprint-sync:latest`,
+                        image: `ghcr.io/a-h-i/sprint-sync:${imageName}`,
                         args: ["backend"],
                         ports: [{containerPort: 3000}],
                         readinessProbe: {
@@ -191,7 +195,7 @@ const aiDeployment = new k8s.apps.v1.Deployment("ai", {
                 containers: [
                     {
                         name: "ai",
-                        image: `ghcr.io/a-h-i/sprint-sync:latest`,
+                        image: `ghcr.io/a-h-i/sprint-sync:${imageName}`,
                         args: ["ai"],
                         ports: [{containerPort: 8000}],
                         readinessProbe: {
@@ -238,7 +242,7 @@ const frontendDeployment = new k8s.apps.v1.Deployment("frontend", {
                     containers: [
                         {
                             name: "frontend",
-                            image: `ghcr.io/a-h-i/sprint-sync:latest`,
+                            image: `ghcr.io/a-h-i/sprint-sync:${imageName}`,
                             args: ["frontend"],
                             env: [
                                 {
@@ -504,7 +508,7 @@ const dbSeedJob = new k8s.batch.v1.Job("db-seed", {
                 }],
                 containers: [{
                     name: "seeder",
-                    image: "ghcr.io/a-h-i/sprint-sync:latest",
+                    image: `ghcr.io/a-h-i/sprint-sync:${imageName}`,
                     args: ["seeder"],
                     env: [
                         {

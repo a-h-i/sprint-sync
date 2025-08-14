@@ -10,3 +10,4 @@ config:
   seeder:runId: "1"
   grafana:adminPassword:
     secure: AAABAFLKDAcXq+cB4e8qoDfLnIQneaQJe4kNdYWL+mXs+geMhHdwd+f/uUIugjEwegVQ/w==
+  image:name: main-f982088-1755177294
