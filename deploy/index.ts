@@ -1,7 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import * as random from "@pulumi/random";
-import {provider} from "@pulumi/pulumi";
+import {FloatingIp} from "@pulumi/digitalocean";
 
 const dbConfig = new pulumi.Config("db");
 const dbUser = dbConfig.require("username");
@@ -14,7 +14,7 @@ const openaiApiKey = openaiConfig.requireSecret("token");
 const authConfig = new pulumi.Config("auth");
 const jwtToken = authConfig.requireSecret("jwt_token");
 
-const infra = new pulumi.StackReference("sprint-sync-infra/production");
+const infra = new pulumi.StackReference("a-h-i/sprint-sync-infra/production");
 const kubeconfig = infra.getOutput("kubeconfig");
 const staticIp = infra.getOutput("staticIp");
 
@@ -176,6 +176,8 @@ const backendService = new k8s.core.v1.Service("backend-svc", {
         selector: {app: backendDeployment.metadata.name},
         ports: [{port: 3000}],
     },
+}, {
+    provider: k8sProvider,
 });
 
 const aiDeployment = new k8s.apps.v1.Deployment("ai", {
@@ -209,6 +211,8 @@ const aiDeployment = new k8s.apps.v1.Deployment("ai", {
             }
         }
     }
+}, {
+    provider: k8sProvider,
 });
 const aiService = new k8s.core.v1.Service("ai-svc", {
     metadata: {
@@ -219,99 +223,131 @@ const aiService = new k8s.core.v1.Service("ai-svc", {
         selector: {app: aiDeployment.metadata.name},
         ports: [{port: 8000}],
     },
+}, {
+    provider: k8sProvider,
 });
 
 const frontendDeployment = new k8s.apps.v1.Deployment("frontend", {
-    metadata: {namespace: appNamespace.metadata.name},
-    spec: {
-        selector: {matchLabels: {app: "frontend"}},
-        replicas: 1,
-        template: {
-            metadata: {labels: {app: "frontend"}},
-            spec: {
-                containers: [
-                    {
-                        name: "frontend",
-                        image: `ghcr.io/a-h-i/sprint-sync:latest`,
-                        args: ["frontend"],
-                        env: [
-                            {
-                                name: 'API_URL',
-                                value: `http://${backendService.metadata.name}.${backendService.metadata.namespace}.svc.cluster.local:3000`
+        metadata: {namespace: appNamespace.metadata.name},
+        spec: {
+            selector: {matchLabels: {app: "frontend"}},
+            replicas: 1,
+            template: {
+                metadata: {labels: {app: "frontend"}},
+                spec: {
+                    containers: [
+                        {
+                            name: "frontend",
+                            image: `ghcr.io/a-h-i/sprint-sync:latest`,
+                            args: ["frontend"],
+                            env: [
+                                {
+                                    name: 'API_URL',
+                                    value: `http://${backendService.metadata.name}.${backendService.metadata.namespace}.svc.cluster.local:3000`
+                                },
+                                {
+                                    name: 'AI_API_URL',
+                                    value: `http://${aiService.metadata.name}.${aiService.metadata.namespace}.svc.cluster.local:8000`
+                                },
+                            ],
+                            ports: [{containerPort: 3000}],
+                            readinessProbe: {
+                                tcpSocket: {port: 3000},
+                                initialDelaySeconds: 5,
+                                periodSeconds: 10,
+                                failureThreshold: 6,
                             },
-                            {
-                                name: 'AI_API_URL',
-                                value: `http://${aiService.metadata.name}.${aiService.metadata.namespace}.svc.cluster.local:8000`
-                            },
-                        ],
-                        ports: [{containerPort: 3000}],
-                        readinessProbe: {
-                            tcpSocket: {port: 3000},
-                            initialDelaySeconds: 5,
-                            periodSeconds: 10,
-                            failureThreshold: 6,
-                        },
-                    }
-                ]
+                        }
+                    ]
+                }
             }
         }
-    }
-});
+    },
+    {
+        provider: k8sProvider,
+    });
 
 const frontendService = new k8s.core.v1.Service("frontend-svc", {
-    metadata: {
-        name: frontendDeployment.metadata.name,
-        namespace: appNamespace.metadata.name,
+        metadata: {
+            name: frontendDeployment.metadata.name,
+            namespace: appNamespace.metadata.name,
+        },
+        spec: {
+            selector: {app: frontendDeployment.metadata.name},
+            ports: [{port: 3000}],
+        },
     },
-    spec: {
-        selector: {app: frontendDeployment.metadata.name},
-        ports: [{port: 3000}],
-    },
-});
-
+    {
+        provider: k8sProvider,
+    });
 
 
 const obsNs = new k8s.core.v1.Namespace("observability", {
-    metadata: { name: "observability" },
-}, { provider: k8sProvider });
+    metadata: {name: "observability"},
+}, {provider: k8sProvider});
 
 const grafanaCfg = new pulumi.Config("grafana");
 const grafanaAdminPassword = grafanaCfg.requireSecret("adminPassword");
 
 const loki = new k8s.helm.v3.Chart("loki", {
     chart: "loki",
-    fetchOpts: { repo: "https://grafana.github.io/helm-charts" },
+    fetchOpts: {repo: "https://grafana.github.io/helm-charts"},
     namespace: obsNs.metadata.name,
-    // keep it simple: single-binary Loki with persistence
     values: {
-        persistence: { enabled: true, size: "10Gi" }, // uses cluster default storage class
-        service: { type: "ClusterIP" },
+        deploymentMode: "SingleBinary<->SimpleScalable",
+        singleBinary: {
+            replicas: 1,
+            persistence: {
+                enabled: true,
+                size: "10Gi",
+                storageClassName: "do-block-storage",
+            },
+        },
+        loki: {
+            storage: {type: "filesystem"},
+            storage_config: {
+                filesystem: {
+                    chunks_directory: "/var/loki/chunks",
+                    rules_directory: "/var/loki/rules",
+                },
+            },
+            commonConfig: {replication_factor: 1},
+            schemaConfig: {
+                configs: [{
+                    from: "2024-04-01",
+                    store: "tsdb",
+                    object_store: "filesystem",
+                    schema: "v13",
+                    index: {prefix: "loki_index_", period: "24h"},
+                }],
+            },
+        },
     },
-}, { provider: k8sProvider });
+}, {provider: k8sProvider});
 
 const promtail = new k8s.helm.v3.Chart("promtail", {
     chart: "promtail",
-    fetchOpts: { repo: "https://grafana.github.io/helm-charts" },
+    fetchOpts: {repo: "https://grafana.github.io/helm-charts"},
     namespace: obsNs.metadata.name,
     values: {
         // Point to the Loki service installed above
         config: {
             clients: [
-                { url: "http://loki.observability.svc.cluster.local:3100/loki/api/v1/push" }
+                {url: "http://loki-gateway.observability.svc.cluster.local/loki/api/v1/push"}
             ],
         },
         // DaemonSet that tails /var/log/containers etc. defaults are fine
     },
-}, { provider: k8sProvider, dependsOn: [loki] });
+}, {provider: k8sProvider, dependsOn: [loki]});
 
 const grafana = new k8s.helm.v3.Chart("grafana", {
     chart: "grafana",
-    fetchOpts: { repo: "https://grafana.github.io/helm-charts" },
+    fetchOpts: {repo: "https://grafana.github.io/helm-charts"},
     namespace: obsNs.metadata.name,
     values: {
         adminPassword: grafanaAdminPassword,
-        persistence: { enabled: true, size: "5Gi" },
-        service: { type: "ClusterIP" },
+        persistence: {enabled: true, size: "5Gi"},
+        service: {type: "ClusterIP"},
 
         // Provision Loki as a datasource automatically
         datasources: {
@@ -337,7 +373,7 @@ const grafana = new k8s.helm.v3.Chart("grafana", {
             },
         },
     },
-}, { provider: k8sProvider, dependsOn: [loki] });
+}, {provider: k8sProvider, dependsOn: [loki]});
 
 const grafanaIngress = new k8s.networking.v1.Ingress("grafana-ingress", {
     metadata: {
@@ -357,13 +393,13 @@ const grafanaIngress = new k8s.networking.v1.Ingress("grafana-ingress", {
                     path: "/grafana(/|$)(.*)",
                     pathType: "ImplementationSpecific",
                     backend: {
-                        service: { name: "grafana", port: { number: 80 } },
+                        service: {name: "grafana", port: {number: 80}},
                     },
                 }],
             },
         }],
     },
-}, { provider: k8sProvider, dependsOn: [grafana] });
+}, {provider: k8sProvider, dependsOn: [grafana]});
 
 // Ingress just for backend, with regex + rewrite
 const backendIngress = new k8s.networking.v1.Ingress("ingress-backend", {
@@ -418,12 +454,16 @@ const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
     },
 }, {provider: k8sProvider});
 
+const staticIpStr = pulumi.output(staticIp).apply((v: FloatingIp) =>
+    v.ipAddress
+);
+
 const nginxServicePatch = new k8s.core.v1.ServicePatch("nginx-lb-patch", {
     metadata: {
         name: "ingress-nginx-controller",
         namespace: "ingress-nginx",
         annotations: {
-            "service.beta.kubernetes.io/do-loadbalancer-ip": staticIp,
+            "service.beta.kubernetes.io/do-loadbalancer-ip": staticIpStr,
         },
     },
 }, {provider: k8sProvider});
