@@ -461,7 +461,7 @@ const staticIpStr = pulumi.output(staticIp).apply((v: FloatingIp) =>
 const nginxServicePatch = new k8s.core.v1.ServicePatch("nginx-lb-patch", {
     metadata: {
         name: "ingress-nginx-controller",
-        namespace: "ingress-nginx",
+        namespace: appNamespace.metadata.name,
         annotations: {
             "service.beta.kubernetes.io/do-loadbalancer-ip": staticIpStr,
         },
