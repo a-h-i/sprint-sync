@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 import { changePassword } from '@/lib/api/change-password.action';
 import Label from '@/lib/components/Label';
 import Input from '@/lib/components/Input';
+import Button from '@/lib/components/Button';
 
 interface ProfileFormProps {
   initialFirstName: string;
@@ -107,13 +108,9 @@ export default function ProfileForm(props: ProfileFormProps) {
           )}
         </div>
 
-        <button
-          type='submit'
-          disabled={savingInfo}
-          className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
-        >
+        <Button type='submit' disabled={savingInfo} variant='primary'>
           {savingInfo ? 'Saving...' : 'Save Changes'}
-        </button>
+        </Button>
       </form>
 
       {/* Change Password Form */}
@@ -159,13 +156,9 @@ export default function ProfileForm(props: ProfileFormProps) {
           )}
         </div>
 
-        <button
-          type='submit'
-          disabled={changingPassword}
-          className='rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700'
-        >
+        <Button type='submit' disabled={changingPassword} variant='primary'>
           {changingPassword ? 'Updating...' : 'Change Password'}
-        </button>
+        </Button>
       </form>
     </div>
   );

@@ -2,7 +2,9 @@ import { Textarea as HeadlessTextArea } from '@headlessui/react';
 import React from 'react';
 
 export interface TextAreaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  ref?: React.ForwardedRef<HTMLTextAreaElement>;
+}
 
 export default function TextArea(props: TextAreaProps) {
   return (

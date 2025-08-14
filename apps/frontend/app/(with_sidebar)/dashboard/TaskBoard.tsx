@@ -3,10 +3,10 @@ import { TaskStatus } from '@sprint-sync/enums';
 import TaskColumn from '@/app/(with_sidebar)/dashboard/TaskColumn';
 import { useEffect, useState } from 'react';
 import CreateTaskModal from '@/lib/components/CreateTaskModal';
-import { Button } from '@headlessui/react';
 import { TaskSchemaType } from '@/lib/schemas/task.schema';
 import { listTasks } from '@/lib/api/list-tasks.action';
 import toast from 'react-hot-toast';
+import Button from '@/lib/components/Button';
 
 export default function TaskBoard() {
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -45,10 +45,7 @@ export default function TaskBoard() {
     <div className='space-y-4 p-4'>
       <div className='flex items-center justify-between'>
         <h1 className='text-2xl font-bold'>Task Board</h1>
-        <Button
-          className='me-2 mb-2 rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-          onClick={() => setShowCreateModal(true)}
-        >
+        <Button variant='primary' onClick={() => setShowCreateModal(true)}>
           Create Task
         </Button>
       </div>

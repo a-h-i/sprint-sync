@@ -19,4 +19,4 @@ RUN curl -fsSL https://moonrepo.dev/install/proto.sh | bash
 
 
 
-RUN moon setup
+RUN proto use

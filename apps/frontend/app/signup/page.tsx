@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Label from '@/lib/components/Label';
 import Input from '@/lib/components/Input';
+import Button from '@/lib/components/Button';
 
 export default function Page() {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -102,13 +103,9 @@ export default function Page() {
           )}
         </div>
 
-        <button
-          type='submit'
-          disabled={isPending}
-          className='w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700'
-        >
+        <Button type='submit' disabled={isPending} variant='primary'>
           {isPending ? 'Creating account…' : 'Sign Up'}
-        </button>
+        </Button>
 
         <div className='text-center text-sm text-gray-600'>
           Already have an account?{' '}
