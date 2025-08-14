@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 arg=$1
+export PROTO_AUTO_INSTALL=true
 
 if [ "$arg" == "frontend" ]; then
   cd /app/apps/frontend || exit

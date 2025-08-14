@@ -13,7 +13,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.8.0",
   "devDependencies": {
     "@eslint/eslintrc": "catalog:",
     "@eslint/js": "catalog:",
