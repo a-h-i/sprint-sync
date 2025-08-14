@@ -21,6 +21,7 @@ const imageName = imageConfig.require("name");
 const infra = new pulumi.StackReference("a-h-i/sprint-sync-infra/production");
 const kubeconfig = infra.getOutput("kubeconfig");
 
+
 const k8sProvider = new k8s.Provider("do-k8s", {
     kubeconfig: kubeconfig,
 });
@@ -105,15 +106,18 @@ const pgDeployment = new k8s.apps.v1.Deployment("postgres", {
 
 const pgService = new k8s.core.v1.Service("postgres-svc", {
     metadata: {
-        name: pgDeployment.metadata.name,
+        name: 'postgres',
         namespace: appNamespace.metadata.name,
 
     },
     spec: {
-        selector: {app: pgDeployment.metadata.name},
+        selector: {app: 'postgres'},
         ports: [{port: 5432}],
     },
 }, {provider: k8sProvider});
+
+const pgWaitCmd = pulumi.interpolate`until nc -z ${pgService.metadata.name}.${appNamespace.metadata.name}.svc.cluster.local 5432; do echo waiting for postgres; sleep 2; done;`;
+
 
 const backendDeployment = new k8s.apps.v1.Deployment("backend", {
     metadata: {namespace: appNamespace.metadata.name},
@@ -126,7 +130,8 @@ const backendDeployment = new k8s.apps.v1.Deployment("backend", {
                 initContainers: [{
                     name: "wait-for-db",
                     image: "busybox:1.36",
-                    command: ["sh", "-c", `until nc -z ${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local 5432; do echo waiting for postgres; sleep 2; done;`]
+                    command: ["sh", "-c"],
+                    args: [pgWaitCmd],
                 }],
                 containers: [
                     {
@@ -155,7 +160,7 @@ const backendDeployment = new k8s.apps.v1.Deployment("backend", {
                             },
                             {
                                 name: "PG_MASTER_HOST",
-                                value: `${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local`
+                                value: pulumi.interpolate`${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local`
                             },
                             {name: "PG_MASTER_PORT", value: "5432"},
                             {
@@ -172,11 +177,11 @@ const backendDeployment = new k8s.apps.v1.Deployment("backend", {
 
 const backendService = new k8s.core.v1.Service("backend-svc", {
     metadata: {
-        name: backendDeployment.metadata.name,
+        name: 'backend',
         namespace: appNamespace.metadata.name,
     },
     spec: {
-        selector: {app: backendDeployment.metadata.name},
+        selector: {app: 'backend'},
         ports: [{port: 3000}],
     },
 }, {
@@ -219,11 +224,11 @@ const aiDeployment = new k8s.apps.v1.Deployment("ai", {
 });
 const aiService = new k8s.core.v1.Service("ai-svc", {
     metadata: {
-        name: aiDeployment.metadata.name,
+        name: 'ai',
         namespace: appNamespace.metadata.name,
     },
     spec: {
-        selector: {app: aiDeployment.metadata.name},
+        selector: {app: 'ai'},
         ports: [{port: 8000}],
     },
 }, {
@@ -246,11 +251,11 @@ const frontendDeployment = new k8s.apps.v1.Deployment("frontend", {
                             env: [
                                 {
                                     name: 'API_URL',
-                                    value: `http://${backendService.metadata.name}.${backendService.metadata.namespace}.svc.cluster.local:3000`
+                                    value: pulumi.interpolate`http://${backendService.metadata.name}.${backendService.metadata.namespace}.svc.cluster.local:3000`
                                 },
                                 {
                                     name: 'AI_API_URL',
-                                    value: `http://${aiService.metadata.name}.${aiService.metadata.namespace}.svc.cluster.local:8000`
+                                    value: pulumi.interpolate`http://${aiService.metadata.name}.${aiService.metadata.namespace}.svc.cluster.local:8000`
                                 },
                             ],
                             ports: [{containerPort: 3000}],
@@ -272,11 +277,11 @@ const frontendDeployment = new k8s.apps.v1.Deployment("frontend", {
 
 const frontendService = new k8s.core.v1.Service("frontend-svc", {
         metadata: {
-            name: frontendDeployment.metadata.name,
+            name: 'frontend',
             namespace: appNamespace.metadata.name,
         },
         spec: {
-            selector: {app: frontendDeployment.metadata.name},
+            selector: {app: 'frontend'},
             ports: [{port: 3000}],
         },
     },
@@ -377,6 +382,32 @@ const grafana = new k8s.helm.v3.Chart("grafana", {
     },
 }, {provider: k8sProvider, dependsOn: [loki]});
 
+const ingressNs = new k8s.core.v1.Namespace("ingress-nginx-ns", {
+    metadata: { name: "ingress-nginx" },
+}, { provider: k8sProvider });
+
+
+const ingressNginx = new k8s.helm.v3.Chart("ingress-nginx", {
+    chart: "ingress-nginx",
+    version: "4.13.1",
+    fetchOpts: {repo: "https://kubernetes.github.io/ingress-nginx"},
+    namespace: ingressNs.metadata.name,
+    values: {
+        controller: {
+            service: {
+                type: "LoadBalancer",
+            },
+            admissionWebhooks: {
+                enabled: true,
+                patch: {enabled: true},
+            }
+        },
+    },
+}, {
+    provider: k8sProvider,
+    dependsOn: [ingressNs],
+});
+
 const grafanaIngress = new k8s.networking.v1.Ingress("grafana-ingress", {
     metadata: {
         name: "grafana-ingress",
@@ -401,7 +432,7 @@ const grafanaIngress = new k8s.networking.v1.Ingress("grafana-ingress", {
             },
         }],
     },
-}, {provider: k8sProvider, dependsOn: [grafana]});
+}, {provider: k8sProvider, dependsOn: [grafana, ingressNginx]});
 
 // Ingress just for backend, with regex + rewrite
 const backendIngress = new k8s.networking.v1.Ingress("ingress-backend", {
@@ -429,7 +460,7 @@ const backendIngress = new k8s.networking.v1.Ingress("ingress-backend", {
             },
         }],
     },
-}, {provider: k8sProvider});
+}, {provider: k8sProvider, dependsOn: [ingressNginx]});
 
 // Ingress for frontend (catch-all). No rewrite needed.
 const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
@@ -454,26 +485,9 @@ const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
             },
         }],
     },
-}, {provider: k8sProvider});
+}, {provider: k8sProvider, dependsOn: [ingressNginx]});
 
 
-const ingressNginx = new k8s.helm.v3.Chart("ingress-nginx", {
-    chart: "ingress-nginx",
-    version: "4.13.1",
-    fetchOpts: {repo: "https://kubernetes.github.io/ingress-nginx"},
-    namespace: appNamespace.metadata.name,
-    values: {
-        controller: {
-            service: {
-                type: "LoadBalancer",
-
-
-            },
-        },
-    },
-}, {
-    provider: k8sProvider
-});
 
 
 // Seeding the database
@@ -507,7 +521,8 @@ const dbSeedJob = new k8s.batch.v1.Job("db-seed", {
                 initContainers: [{
                     name: "wait-for-db",
                     image: "busybox:1.36",
-                    command: ["sh", "-c", "until nc -z postgres.app.svc.cluster.local 5432; do echo waiting for postgres; sleep 2; done;"],
+                    command: ["sh", "-c"],
+                    args: [pgWaitCmd],
                 }],
                 containers: [{
                     name: "seeder",
@@ -528,7 +543,7 @@ const dbSeedJob = new k8s.batch.v1.Job("db-seed", {
                         },
                         {
                             name: "PG_MASTER_HOST",
-                            value: `${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local`
+                            value: pulumi.interpolate`${pgService.metadata.name}.${pgService.metadata.namespace}.svc.cluster.local`
                         },
                         {name: "PG_MASTER_PORT", value: "5432"},
                         {
