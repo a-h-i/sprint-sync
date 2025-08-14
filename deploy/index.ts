@@ -79,7 +79,7 @@ const pgDeployment = new k8s.apps.v1.Deployment("postgres", {
                         volumeMounts: [
                             {
                                 name: "pgdata",
-                                mountPath: "/var/lib/postgresql/data",
+                                mountPath: "/var/lib/postgresql",
                             },
                         ],
                         readinessProbe: {
