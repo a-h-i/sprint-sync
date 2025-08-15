@@ -22,4 +22,4 @@ DevOps,dockerfiles for each micro service,1,,1,
 ,pulumi IaC for cluster,2,,1,
 ,pulumi IaC for deployments,2,,4,Had some issues with the grafana deployment that needed to be debugged
 Documentation,readme files for each microservice and the overall project,1,,1,
-,record loom video,0.5,,,
+,record loom video,0.5,,0.5,

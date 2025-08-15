@@ -6,7 +6,7 @@ export const cluster = new digitalocean.KubernetesCluster("do-cluster", {
     version: "1.33.1-do.3",
     nodePool: {
         name: "default-pool",
-        size: "s-2vcpu-2gb",
+        size: "s-2vcpu-4gb",
         nodeCount: 2,
     },
 });

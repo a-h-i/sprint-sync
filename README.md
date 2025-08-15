@@ -27,3 +27,7 @@ However you will need to create a .env file in the apps/ai folder with your open
 The template for the file is in the [.env.template](apps/ai/.env.template) file
 
 Each application has its own README.md file.
+
+
+### Loom recording
+https://www.loom.com/share/f64ee6e485074f43a79be60f4fa3b5a5?sid=b6e8a2ea-3262-480e-aa28-db31c1195474
