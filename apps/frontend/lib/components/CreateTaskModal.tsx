@@ -140,7 +140,6 @@ export default function CreateTaskModal({
     };
   }, []);
 
-  const formDescriptionValue = watch('description');
   useEffect(() => {
     switch (generateDescriptionState.status) {
       case GenerateDescriptionStatus.IDLE:
@@ -164,10 +163,12 @@ export default function CreateTaskModal({
         });
         break;
       case GenerateDescriptionStatus.STREAMING_DONE:
-        setValue(
-          'description',
-          generateDescriptionState.streamingChunks.join(''),
-        );
+        if (generateDescriptionState.streamingChunks.length > 0) {
+          setValue(
+            'description',
+            generateDescriptionState.streamingChunks.join(''),
+          );
+        }
         generateDescriptionDispatch({
           type: 'idle',
         });
@@ -175,7 +176,6 @@ export default function CreateTaskModal({
     }
   }, [
     generateDescriptionState,
-    formDescriptionValue,
     setValue,
     generateDescriptionDispatch,
   ]);
