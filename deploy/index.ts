@@ -302,7 +302,7 @@ const loki = new k8s.helm.v3.Chart("loki", {
     fetchOpts: {repo: "https://grafana.github.io/helm-charts"},
     namespace: obsNs.metadata.name,
     values: {
-        deploymentMode: "SingleBinary",
+        deploymentMode: "SingleBinary<->SimpleScalable",
         singleBinary: {
             replicas: 1,
             persistence: {
@@ -311,13 +311,17 @@ const loki = new k8s.helm.v3.Chart("loki", {
                 storageClassName: "do-block-storage",
             },
             resources: {
-                requests: { cpu: "100m", memory: "256Mi" },
-                limits:   { cpu: "500m", memory: "512Mi" },
+                requests: {cpu: "100m", memory: "256Mi"},
+                limits: {cpu: "500m", memory: "512Mi"},
             },
         },
+        minio: {enabled: false},
+        chunksCache: {enabled: false},
+        resultsCache: {enabled: false},
         loki: {
+            auth_enabled: false,
             storage: {type: "filesystem"},
-            commonConfig: { replication_factor: 1 },
+            commonConfig: {replication_factor: 1},
             storage_config: {
                 filesystem: {
                     directory: "/var/loki",
@@ -332,21 +336,25 @@ const loki = new k8s.helm.v3.Chart("loki", {
                     index: {prefix: "loki_index_", period: "24h"},
                 }],
             },
-            backend:        { replicas: 0 },
-            read:           { replicas: 0 },
-            write:          { replicas: 0 },
-            ingester:       { replicas: 0 },
-            querier:        { replicas: 0 },
-            queryFrontend:  { replicas: 0 },
-            queryScheduler: { replicas: 0 },
-            distributor:    { replicas: 0 },
-            compactor:      { replicas: 0 },
-            indexGateway:   { replicas: 0 },
-            bloomCompactor: { replicas: 0 },
-            bloomGateway:   { replicas: 0 },
-            resultsCache: { enabled: false },
-            chunksCache:  { enabled: false },
-            gateway: { enabled: true },
+            pattern_ingester: {
+                enabled: true,
+            },
+            limits_config: {
+                allow_structured_metadata: true,
+                retention_period: "7d",
+            },
+            ruler: {enabled_api: true},
+            backend: {replicas: 0},
+            read: {replicas: 0},
+            write: {replicas: 0},
+            queryFrontend: {replicas: 0},
+            queryScheduler: {replicas: 0},
+            indexGateway: {replicas: 0},
+            bloomCompactor: {replicas: 0},
+            bloomGateway: {replicas: 0},
+            resultsCache: {enabled: false},
+            chunksCache: {enabled: false},
+            gateway: {enabled: true},
         },
     },
 }, {provider: k8sProvider});
@@ -366,6 +374,43 @@ const promtail = new k8s.helm.v3.Chart("promtail", {
     },
 }, {provider: k8sProvider, dependsOn: [loki]});
 
+
+
+const ingressNs = new k8s.core.v1.Namespace("ingress-nginx-ns", {
+    metadata: {name: "ingress-nginx"},
+}, {provider: k8sProvider});
+
+
+const ingressNginx = new k8s.helm.v3.Chart("ingress-nginx", {
+    chart: "ingress-nginx",
+    version: "4.13.1",
+    fetchOpts: {repo: "https://kubernetes.github.io/ingress-nginx"},
+    namespace: ingressNs.metadata.name,
+    values: {
+        controller: {
+            service: {
+                type: "LoadBalancer",
+            },
+            admissionWebhooks: {
+                enabled: true,
+                patch: {enabled: true},
+            }
+        },
+    },
+}, {
+    provider: k8sProvider,
+    dependsOn: [ingressNs],
+});
+const ingressStatus = ingressNginx.getResourceProperty(
+    "v1/Service",
+    "ingress-nginx/ingress-nginx-controller",
+    "status"
+);
+
+const lbHost = ingressStatus.apply(s =>
+    s?.loadBalancer?.ingress?.[0]?.ip ??
+    s?.loadBalancer?.ingress?.[0]?.hostname ?? ""
+);
 const grafana = new k8s.helm.v3.Chart("grafana", {
     chart: "grafana",
     fetchOpts: {repo: "https://grafana.github.io/helm-charts"},
@@ -389,51 +434,21 @@ const grafana = new k8s.helm.v3.Chart("grafana", {
             },
         },
 
-        grafana: {
-            grafanaIni: {
-                server: {
-                    root_url: "%(protocol)s://%(domain)s/grafana",
-                    serve_from_sub_path: true,
-                },
+        "grafana.ini": {
+            server: {
+                root_url: "%(protocol)s://%(domain)s/grafana",
+                serve_from_sub_path: true,
+                domain: lbHost,
             },
         },
     },
-}, {provider: k8sProvider, dependsOn: [loki]});
-
-const ingressNs = new k8s.core.v1.Namespace("ingress-nginx-ns", {
-    metadata: { name: "ingress-nginx" },
-}, { provider: k8sProvider });
-
-
-const ingressNginx = new k8s.helm.v3.Chart("ingress-nginx", {
-    chart: "ingress-nginx",
-    version: "4.13.1",
-    fetchOpts: {repo: "https://kubernetes.github.io/ingress-nginx"},
-    namespace: ingressNs.metadata.name,
-    values: {
-        controller: {
-            service: {
-                type: "LoadBalancer",
-            },
-            admissionWebhooks: {
-                enabled: true,
-                patch: {enabled: true},
-            }
-        },
-    },
-}, {
-    provider: k8sProvider,
-    dependsOn: [ingressNs],
-});
-
+}, {provider: k8sProvider, dependsOn: [loki, ingressNginx]});
 const grafanaIngress = new k8s.networking.v1.Ingress("grafana-ingress", {
     metadata: {
         name: "grafana-ingress",
         namespace: obsNs.metadata.name,
         annotations: {
             "kubernetes.io/ingress.class": "nginx",
-            "nginx.ingress.kubernetes.io/use-regex": "true",
-            "nginx.ingress.kubernetes.io/rewrite-target": "/$2",
         },
     },
     spec: {
@@ -441,8 +456,8 @@ const grafanaIngress = new k8s.networking.v1.Ingress("grafana-ingress", {
         rules: [{
             http: {
                 paths: [{
-                    path: "/grafana(/|$)(.*)",
-                    pathType: "ImplementationSpecific",
+                    path: "/grafana",
+                    pathType: "Prefix",
                     backend: {
                         service: {name: "grafana", port: {number: 80}},
                     },
@@ -503,8 +518,6 @@ const frontendIngress = new k8s.networking.v1.Ingress("ingress-frontend", {
         }],
     },
 }, {provider: k8sProvider, dependsOn: [ingressNginx]});
-
-
 
 
 // Seeding the database

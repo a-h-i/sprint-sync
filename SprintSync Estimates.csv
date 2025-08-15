@@ -18,8 +18,8 @@ As a user I want AI assistance to help me draft a task description from a short 
 ,create /ai/suggest endpoint ,2,,2,
 ,integrate LLM using langgraph,2,,2,
 ,add button in task creation modal to generate description from title,1,,2,
-DevOps,dockerfiles for each micro service,1,,,
-,pulumi IaC for cluster,2,,,
-,pulumi IaC for deployments,2,,,
-Documentation,readme files for each microservice and the overall project,1,,,
+DevOps,dockerfiles for each micro service,1,,1,
+,pulumi IaC for cluster,2,,1,
+,pulumi IaC for deployments,2,,4,Had some issues with the grafana deployment that needed to be debugged
+Documentation,readme files for each microservice and the overall project,1,,1,
 ,record loom video,0.5,,,
